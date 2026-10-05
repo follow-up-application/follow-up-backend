@@ -16,7 +16,7 @@ class CreateMateriaRequest extends FormRequest
         return [
             'nombre' => ['required', 'string', 'max:150'],
             'descripcion' => ['required', 'string', 'max:1000'],
-            'turno' => ['required', 'string'],
+            'curso_division_turno_id' => ['required', 'integer', 'exists:curso_division_turno,id'],
             'docente_id' => ['required', 'uuid', 'exists:docentes,id'],
         ];
     }
@@ -24,6 +24,7 @@ class CreateMateriaRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'curso_division_turno_id.exists' => 'El curso, división y turno seleccionado no existe.',
             'docente_id.exists' => 'El docente seleccionado no existe.',
             'docente_id.uuid' => 'El identificador del docente no es válido.',
         ];

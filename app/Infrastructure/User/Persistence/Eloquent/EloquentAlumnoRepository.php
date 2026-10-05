@@ -5,7 +5,6 @@ namespace App\Infrastructure\User\Persistence\Eloquent;
 use App\Domain\Shared\ValueObjects\FechaFormateada;
 use App\Domain\User\Entities\Alumno;
 use App\Domain\User\Repositories\AlumnoRepositoryInterface;
-use App\Domain\User\ValueObjects\CodigoInstitucional;
 use App\Domain\User\ValueObjects\UserId;
 use App\Domain\User\ValueObjects\UserName;
 use App\Infrastructure\User\Persistence\AlumnoModel;
@@ -18,23 +17,30 @@ class EloquentAlumnoRepository implements AlumnoRepositoryInterface
         $userModel = UserModel::updateOrCreate(
             ['id' => $alumno->id()->value()],
             [
-                'first_name'           => $alumno->firstName(),
-                'last_name'            => $alumno->lastName(),
-                'username'             => $alumno->username(),
-                'password'             => $alumno->password(),
-                'dni'                  => $alumno->dni(),
-                'role'                 => $alumno->role()->value,
+                'first_name' => $alumno->firstName(),
+                'last_name' => $alumno->lastName(),
+                'username' => $alumno->username(),
+                'password' => $alumno->password(),
+                'dni' => $alumno->dni(),
+                'role' => $alumno->role()->value,
                 'must_change_password' => $alumno->mustChangePassword(),
             ]
         );
 
-        $alumnoModel = AlumnoModel::updateOrCreate(
-            ['id' => $userModel->id],
-            [
-                'fecha_nacimiento'         => $alumno->fechaNacimiento()->toDatabase(),
-                'curso_division_turno_id'  => $alumno->cursoDivisionTurno()->id(),
-            ]
-        );
+        $alumnoModel = AlumnoModel::where('id', $userModel->id)->first();
+
+        if ($alumnoModel) {
+            $alumnoModel->update([
+                'fecha_nacimiento' => $alumno->fechaNacimiento()->toDatabase(),
+                'curso_division_turno_id' => $alumno->cursoDivisionTurno()->id(),
+            ]);
+        } else {
+            $alumnoModel = AlumnoModel::create([
+                'id' => $userModel->id,
+                'fecha_nacimiento' => $alumno->fechaNacimiento()->toDatabase(),
+                'curso_division_turno_id' => $alumno->cursoDivisionTurno()->id(),
+            ]);
+        }
 
         return $this->toDomain($userModel, $alumnoModel);
     }
@@ -42,7 +48,9 @@ class EloquentAlumnoRepository implements AlumnoRepositoryInterface
     public function findById(UserId $id): ?Alumno
     {
         $userModel = UserModel::find($id->value());
-        if (!$userModel) return null;
+        if (! $userModel) {
+            return null;
+        }
 
         $alumnoModel = AlumnoModel::find($userModel->id);
 
@@ -52,7 +60,9 @@ class EloquentAlumnoRepository implements AlumnoRepositoryInterface
     public function findByUsername(string $username): ?Alumno
     {
         $userModel = UserModel::where('username', $username)->first();
-        if (!$userModel) return null;
+        if (! $userModel) {
+            return null;
+        }
 
         $alumnoModel = AlumnoModel::find($userModel->id);
 
@@ -71,16 +81,6 @@ class EloquentAlumnoRepository implements AlumnoRepositoryInterface
     {
         // cascadeOnDelete en la migración se encarga de borrar alumnos también
         UserModel::destroy($id->value());
-    }
-
-    public function findByCodigoInstitucional(CodigoInstitucional $codigoInstitucional): ?Alumno
-    {
-        $alumnoModel = AlumnoModel::where('codigo_institucional', $codigoInstitucional->value())->first();
-        if (!$alumnoModel) return null;
-
-        $userModel = UserModel::find($alumnoModel->id);
-
-        return $userModel ? $this->toDomain($userModel, $alumnoModel) : null;
     }
 
     public function totalAlumnos(): int

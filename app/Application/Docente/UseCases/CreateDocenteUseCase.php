@@ -29,7 +29,8 @@ class CreateDocenteUseCase
                 throw new CDTNoEncontradoException($dto->cursoDivisionTurnoId);
             }
 
-            $anio = date('Y', strtotime($dto->fechaIngreso));
+            $fechaIngreso = new FechaFormateada($dto->fechaIngreso);
+            $anio = (int) $fechaIngreso->toYears();
 
             $docente = new Docente(
                 id: UserId::generate(),
@@ -39,7 +40,7 @@ class CreateDocenteUseCase
                 username: new UserName('DOC', (string) $dto->dni, strval($anio))->value(),
                 password: Hash::make((string) $dto->dni),
                 telephone: $dto->telephone,
-                fecha_ingreso: new FechaFormateada($dto->fechaIngreso),
+                fecha_ingreso: $fechaIngreso,
                 curso_division_turno_id: $cdt->id(),
             );
 

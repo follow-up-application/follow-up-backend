@@ -15,10 +15,18 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->text('descripcion');
-            $table->string('turno');
+
+            // El turno ya no vive en la materia: se hereda del curso division turno.
+            $table->foreignId('curso_division_turno_id')
+                ->constrained('curso_division_turno')
+                ->restrictOnDelete();
+
             $table->foreignUuid('docente_id')->constrained('docentes')->restrictOnDelete();
 
             $table->timestamps();
+
+            // Dos materias homónimas solo pueden coexistir si pertenecen a cursos distintos.
+            $table->unique(['nombre', 'curso_division_turno_id']);
         });
     }
 

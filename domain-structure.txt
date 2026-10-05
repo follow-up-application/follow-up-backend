@@ -1,38 +1,69 @@
 users
 ├── id (uuid)
-├── nombre
-├── apellido
+├── first_name
+├── last_name
 ├── dni
-├── telefono
-├── direccion
+├── username
 ├── password
-├── role
+├── role                (docente, alumno, tutor, administrador)
 ├── must_change_password (bool)
 └── timestamps
+    │                     (1,1) ── el administrador vive dentro de usuario (role = administrador),
+    │                            no tiene tabla propia
+    │
+    ├── alumnos            (1,1) specialization
+    │   ├── id (uuid)     → FK users.id
+    │   ├── fecha_nacimiento
+    │   ├── codigo_institucional
+    │   └── curso_division_turno_id → FK curso_division_turno.id
+    │
+    ├── docentes           (1,1) specialization
+    │   ├── id (uuid)     → FK users.id
+    │   ├── telephone
+    │   ├── fecha_ingreso
+    │   └── curso_division_turno_id → FK curso_division_turno.id
+    │
+    └── tutores            (1,1) specialization
+        ├── id (uuid)     → FK users.id
+        ├── telephone
+        └── email
 
-alumnos
+tutor_alumno            (pivot N:N entre tutor y alumno)
 ├── id (uuid)
-├── user_id (uuid FK → users)
-├── username          (EST-DNI-AÑO)
-├── carrera
-├── año_ingreso
+├── alumno_id (uuid FK → alumnos, cascade)
+├── tutor_id (uuid FK → tutores, cascade)
+├── relationship         (madre, padre, otra, ...)
+├── otra_relacion        (nullable)
 ├── codigo_institucional
 └── timestamps
+    UNIQUE(alumno_id, tutor_id)
 
-docentes
-├── id (uuid)
-├── user_id (uuid FK → users)
-├── username          (DOC-DNI-AÑO)
+curso_division_turno    (0..N ←→ 0..N materias)
+├── id
+├── curso
+├── division
+├── turno
+├── capacidad_maxima
 └── timestamps
+    UNIQUE(curso, division, turno)
 
-tutores
-├── id (uuid)
-├── user_id (uuid FK → users)
-├── email
-├── relacion          (padre, madre, tutor legal, etc.)
+materias                (1,1 → curso_division_turno)   (1,1 → docente)
+├── id
+├── nombre
+├── descripcion
+├── curso_division_turno_id → FK curso_division_turno.id, restrict
+├── docente_id (uuid FK → docentes, restrict)
 └── timestamps
+    UNIQUE(nombre, curso_division_turno_id)
+    el turno de la materia se hereda del curso_division_turno
 
-tutor_alumno          (pivot)
-├── tutor_id (uuid FK → tutores)
-├── alumno_id (uuid FK → alumnos)
+inscripciones           (N:N entre alumno y materia)
+├── id
+├── alumno_id (uuid FK → alumnos, cascade)
+├── materia_id (FK → materias, cascade)
+├── fecha_inscripcion
+├── estado               (pendiente, aprobado, rechazado)
 └── timestamps
+    UNIQUE(alumno_id, materia_id)
+    un alumno se inscribe en una o muchas materias;
+    una materia tiene ninguno o muchos alumnos inscriptos

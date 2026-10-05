@@ -11,14 +11,21 @@ class EloquentCDTRepository implements CursoDivisionTurnoRepositoryInterface
 {
     public function save(CursoDivisionTurno $cursoDivisionTurno): CursoDivisionTurno
     {
-        $cdtModel = CursoDivisionTurnoModel::updateOrCreate(
-            ['id' => $cursoDivisionTurno->id()],
-            [
-                'curso'     => $cursoDivisionTurno->curso(),
-                'division' => $cursoDivisionTurno->division(),
-                'turno'    => $cursoDivisionTurno->turno()->value,
-            ]
-        );
+        $valores = [
+            'curso' => $cursoDivisionTurno->curso(),
+            'division' => $cursoDivisionTurno->division(),
+            'turno' => $cursoDivisionTurno->turno()->value,
+            'capacidad_maxima' => $cursoDivisionTurno->capacidadMaxima(),
+        ];
+
+        if ($cursoDivisionTurno->id() === null) {
+            $cdtModel = CursoDivisionTurnoModel::create($valores);
+        } else {
+            $cdtModel = CursoDivisionTurnoModel::updateOrCreate(
+                ['id' => $cursoDivisionTurno->id()],
+                $valores,
+            );
+        }
 
         return $this->toDomain($cdtModel);
     }
@@ -40,7 +47,7 @@ class EloquentCDTRepository implements CursoDivisionTurnoRepositoryInterface
     public function all(): array
     {
         return CursoDivisionTurnoModel::all()
-            ->map(fn(CursoDivisionTurnoModel $model) => $this->toDomain($model))
+            ->map(fn (CursoDivisionTurnoModel $model) => $this->toDomain($model))
             ->toArray();
     }
 

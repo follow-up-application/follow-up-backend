@@ -50,15 +50,16 @@ class EloquentDocenteRepository implements DocenteRepositoryInterface
         return $docenteModel ? $this->toDomain($userModel, $docenteModel) : null;
     }
 
-    public function findByUsername(string $username): ?Docente
+public function findByUsername(string $username): ?Docente
     {
-        $docenteModel = DocenteModel::where('username', $username)->first();
+        // username vive en users, no en docentes.
+        $userModel = UserModel::where('username', $username)->first();
 
-        if (!$docenteModel) return null;
+        if (! $userModel) return null;
 
-        $userModel = UserModel::find($docenteModel->id);
+        $docenteModel = DocenteModel::where('id', $userModel->id)->first();
 
-        return $userModel ? $this->toDomain($userModel, $docenteModel) : null;
+        return $docenteModel ? $this->toDomain($userModel, $docenteModel) : null;
     }
 
     public function all(): array
@@ -82,9 +83,9 @@ class EloquentDocenteRepository implements DocenteRepositoryInterface
             $userModel->first_name,
             $userModel->last_name,
             (int) $userModel->dni,
+            $userModel->username,
             $userModel->password,
             $docenteModel->telephone,
-            $userModel->username,
             FechaFormateada::fromDatabase(
                 $docenteModel->fecha_ingreso instanceof \DateTimeInterface
                     ? $docenteModel->fecha_ingreso->format('Y-m-d')

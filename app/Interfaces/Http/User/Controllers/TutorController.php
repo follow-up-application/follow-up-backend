@@ -4,13 +4,19 @@ namespace App\Interfaces\Http\User\Controllers;
 
 use App\Application\Tutor\UseCases\GetAllTutoresUseCase;
 use App\Application\Tutor\DTOs\RegisterTutorDTO;
+use App\Application\Tutor\DTOs\StoreTutorDTO;
+use App\Application\Tutor\DTOs\UpdateTutorDTO;
 use App\Application\Tutor\UseCases\RegisterTutorUseCase;
+use App\Application\Tutor\UseCases\StoreTutorUseCase;
+use App\Application\Tutor\UseCases\UpdateTutorUseCase;
 use App\Domain\User\Repositories\AlumnoRepositoryInterface;
 use App\Domain\User\Repositories\TutorAlumnoRepositoryInterface;
 use App\Domain\User\Repositories\TutorRepositoryInterface;
 use App\Domain\User\ValueObjects\UserId;
 use App\Interfaces\Http\Controller;
 use App\Interfaces\Http\User\Requests\CreateTutorRequest;
+use App\Interfaces\Http\User\Requests\StoreTutorRequest;
+use App\Interfaces\Http\User\Requests\UpdateTutorRequest;
 use App\Interfaces\Http\User\Resources\AlumnoResource;
 use App\Interfaces\Http\User\Resources\TutorResource;
 use Illuminate\Http\JsonResponse;
@@ -19,6 +25,8 @@ class TutorController extends Controller
 {
     public function __construct(
         private readonly RegisterTutorUseCase  $registerTutorUseCase,
+        private readonly StoreTutorUseCase  $storeTutorUseCase,
+        private readonly UpdateTutorUseCase  $updateTutorUseCase,
         private readonly GetAllTutoresUseCase $getAllTutoresUseCase,
         private readonly TutorRepositoryInterface $tutorRepository,
         private readonly TutorAlumnoRepositoryInterface $tutorAlumnoRepository,
@@ -29,6 +37,15 @@ class TutorController extends Controller
     {
         $dto  = RegisterTutorDTO::fromArray($request->validated());
         $user = $this->registerTutorUseCase->execute($dto);
+
+        return response()->json(new TutorResource($user), 201);
+    }
+
+    /** Alta directa del administrador, sin pre-registro previo. */
+    public function store(StoreTutorRequest $request): JsonResponse
+    {
+        $dto  = StoreTutorDTO::fromArray($request->validated());
+        $user = $this->storeTutorUseCase->execute($dto);
 
         return response()->json(new TutorResource($user), 201);
     }
@@ -49,6 +66,37 @@ class TutorController extends Controller
         }
 
         return response()->json(new TutorResource($tutor));
+    }
+
+    public function update(UpdateTutorRequest $request, string $id): JsonResponse
+    {
+        $dto = UpdateTutorDTO::fromArray($request->validated());
+
+        if ($dto->isEmpty()) {
+            return response()->json(['message' => 'No se informó ningún campo para actualizar.'], 422);
+        }
+
+        $tutor = $this->updateTutorUseCase->execute($id, $dto);
+
+        return response()->json(new TutorResource($tutor), 200);
+    }
+
+    /** Alumnos a cargo del tutor, usando los vínculos tutor_alumno. */
+    public function alumnos(string $id): JsonResponse
+    {
+        $vinculos = $this->tutorAlumnoRepository->findByTutorId(new UserId($id));
+
+        $alumnos = [];
+
+        foreach ($vinculos as $vinculo) {
+            $alumno = $this->alumnoRepository->findById($vinculo->alumnoId());
+
+            if ($alumno !== null) {
+                $alumnos[] = new AlumnoResource($alumno);
+            }
+        }
+
+        return response()->json($alumnos, 200);
     }
 
     public function destroy(string $id): JsonResponse

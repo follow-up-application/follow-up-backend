@@ -17,11 +17,12 @@ class MateriaResource extends JsonResource
         $materia = $this->resource;
 
         return [
-            'id'                  => $materia->id(),
-            'nombre'              => $materia->nombre(),
-            'descripcion'         => $materia->descripcion(),
-            'turno'               => $materia->turno()->value,
-            'docente_id'          => $materia->docente()->value(),
+            'id'                    => $materia->id(),
+            'nombre'                => $materia->nombre(),
+            'descripcion'           => $materia->descripcion(),
+            'curso_division_turno_id' => $materia->cursoDivisionTurno()->id(),
+            'turno'                 => $materia->turno(),
+            'docente_id'            => $materia->docente()->value(),
         ];
     }
 }

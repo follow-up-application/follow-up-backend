@@ -4,6 +4,7 @@ use App\Infrastructure\User\Providers\AdminServiceProvider;
 use App\Infrastructure\User\Providers\AlumnoServiceProvider;
 use App\Infrastructure\User\Providers\CDTServiceProvider;
 use App\Infrastructure\User\Providers\DocenteServiceProvider;
+use App\Infrastructure\User\Providers\InscripcionServiceProvider;
 use App\Infrastructure\User\Providers\MateriaServiceProvider;
 use App\Infrastructure\User\Providers\TutorAlumnoServiceProvider;
 use App\Infrastructure\User\Providers\TutorServiceProvider;
@@ -20,4 +21,5 @@ return [
     AlumnoServiceProvider::class,
     DocenteServiceProvider::class,
     TutorServiceProvider::class,
+    InscripcionServiceProvider::class,
 ];

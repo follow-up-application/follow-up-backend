@@ -6,7 +6,6 @@ use App\Domain\Shared\ValueObjects\FechaFormateada;
 use App\Domain\User\ValueObjects\UserId;
 use App\Domain\User\ValueObjects\UserName;
 use App\Domain\User\ValueObjects\UserRole;
-use App\Domain\User\ValueObjects\CodigoInstitucional;
 
 class Alumno extends User
 {
