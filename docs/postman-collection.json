@@ -169,9 +169,9 @@
           }
         },
         {
-          "name": "Eliminar usuario",
+          "name": "Inhabilitar usuario",
           "request": {
-            "method": "DELETE",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Authorization",
@@ -179,11 +179,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/users/{{userId}}",
+              "raw": "{{baseUrl}}/api/v1/users/{{userId}}/inhabilitar",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "{{userId}}"]
+              "path": ["api", "v1", "users", "{{userId}}", "inhabilitar"]
             },
-            "description": "Elimina un usuario. Rol: administrador."
+            "description": "Inhabilita (soft delete) un usuario. Rol: administrador."
           }
         },
         {
@@ -298,9 +298,9 @@
           }
         },
         {
-          "name": "Eliminar alumno",
+          "name": "Inhabilitar alumno",
           "request": {
-            "method": "DELETE",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Authorization",
@@ -308,11 +308,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/alumnos/{{alumnoId}}",
+              "raw": "{{baseUrl}}/api/v1/alumnos/{{alumnoId}}/inhabilitar",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "alumnos", "{{alumnoId}}"]
+              "path": ["api", "v1", "alumnos", "{{alumnoId}}", "inhabilitar"]
             },
-            "description": "Elimina un alumno. Roles: administrador, docente."
+            "description": "Inhabilita (soft delete) un alumno. Roles: administrador, docente."
           }
         }
       ]
@@ -409,9 +409,9 @@
           }
         },
         {
-          "name": "Eliminar docente",
+          "name": "Inhabilitar docente",
           "request": {
-            "method": "DELETE",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Authorization",
@@ -419,11 +419,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/docentes/{{docenteId}}",
+              "raw": "{{baseUrl}}/api/v1/docentes/{{docenteId}}/inhabilitar",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "docentes", "{{docenteId}}"]
+              "path": ["api", "v1", "docentes", "{{docenteId}}", "inhabilitar"]
             },
-            "description": "Elimina un docente. Rol: administrador."
+            "description": "Inhabilita (soft delete) un docente. Rol: administrador."
           }
         },
         {
@@ -609,9 +609,9 @@
           }
         },
         {
-          "name": "Eliminar tutor",
+          "name": "Inhabilitar tutor",
           "request": {
-            "method": "DELETE",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Authorization",
@@ -619,11 +619,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/tutores/{{tutorId}}",
+              "raw": "{{baseUrl}}/api/v1/tutores/{{tutorId}}/inhabilitar",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "tutores", "{{tutorId}}"]
+              "path": ["api", "v1", "tutores", "{{tutorId}}", "inhabilitar"]
             },
-            "description": "Elimina un tutor. Rol: administrador."
+            "description": "Inhabilita (soft delete) un tutor. Rol: administrador."
           }
         }
       ]
@@ -742,9 +742,9 @@
           }
         },
         {
-          "name": "Eliminar admin",
+          "name": "Inhabilitar admin",
           "request": {
-            "method": "DELETE",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Authorization",
@@ -752,11 +752,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/admins/{{adminId}}",
+              "raw": "{{baseUrl}}/api/v1/admins/{{adminId}}/inhabilitar",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admins", "{{adminId}}"]
+              "path": ["api", "v1", "admins", "{{adminId}}", "inhabilitar"]
             },
-            "description": "Elimina un administrador. Rol: administrador."
+            "description": "Inhabilita (soft delete) un administrador. Rol: administrador."
           }
         },
         {
@@ -871,9 +871,9 @@
           }
         },
         {
-          "name": "Eliminar CDT",
+          "name": "Inhabilitar CDT",
           "request": {
-            "method": "DELETE",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Authorization",
@@ -881,11 +881,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno/{{cdtId}}",
+              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno/{{cdtId}}/inhabilitar",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "cursoDivisionTurno", "{{cdtId}}"]
+              "path": ["api", "v1", "cursoDivisionTurno", "{{cdtId}}", "inhabilitar"]
             },
-            "description": "Elimina un CDT. Rol: administrador."
+            "description": "Inhabilita (soft delete) un curso/división/turno. Rol: administrador."
           }
         },
         {
@@ -1000,9 +1000,9 @@
           }
         },
         {
-          "name": "Eliminar materia",
+          "name": "Inhabilitar materia",
           "request": {
-            "method": "DELETE",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Authorization",
@@ -1010,11 +1010,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/materias/{{materiaId}}",
+              "raw": "{{baseUrl}}/api/v1/materias/{{materiaId}}/inhabilitar",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "materias", "{{materiaId}}"]
+              "path": ["api", "v1", "materias", "{{materiaId}}", "inhabilitar"]
             },
-            "description": "Elimina una materia. Rol: administrador."
+            "description": "Inhabilita (soft delete) una materia. Rol: administrador."
           }
         }
       ]
@@ -1161,7 +1161,7 @@
           }
         },
         {
-          "name": "Eliminar inscripción",
+          "name": "Eliminar inscripción (no permitido)",
           "request": {
             "method": "DELETE",
             "header": [
@@ -1175,7 +1175,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "v1", "inscripciones", "{{inscripcionId}}"]
             },
-            "description": "Elimina una inscripción. Rol: administrador."
+            "description": "No se permite eliminar inscripciones. Usar Cambiar estado de inscripción con estado=rechazado. Rol: administrador."
           }
         }
       ]
@@ -1210,9 +1210,9 @@
           }
         },
         {
-          "name": "Eliminar vínculo tutor-alumno",
+          "name": "Inhabilitar vínculo tutor-alumno",
           "request": {
-            "method": "DELETE",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Authorization",
@@ -1220,11 +1220,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/tutor-alumno/{{tutorAlumnoId}}",
+              "raw": "{{baseUrl}}/api/v1/tutor-alumno/{{tutorAlumnoId}}/inhabilitar",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "tutor-alumno", "{{tutorAlumnoId}}"]
+              "path": ["api", "v1", "tutor-alumno", "{{tutorAlumnoId}}", "inhabilitar"]
             },
-            "description": "Elimina un vínculo tutor-alumno. Rol: administrador."
+            "description": "Inhabilita (soft delete) un vínculo tutor-alumno. Rol: administrador."
           }
         },
         {

@@ -81,9 +81,13 @@ class EloquentInscripcionRepository implements InscripcionRepositoryInterface
             ->toArray();
     }
 
-    public function destroy(int $id): void
+    public function inhabilitar(int $id): void
     {
-        InscripcionModel::destroy($id);
+        $model = InscripcionModel::find($id);
+
+        if ($model) {
+            $model->delete();
+        }
     }
 
     private function toDomain(InscripcionModel $model): Inscripcion

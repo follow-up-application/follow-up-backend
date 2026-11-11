@@ -23,5 +23,5 @@ interface TutorAlumnoRepositoryInterface
     /** @return TutorAlumno[] */
     public function findByTutorId(UserId $tutorId): array;
 
-    public function delete(UserId $id): void;
+    public function inhabilitar(UserId $id): void;
 }

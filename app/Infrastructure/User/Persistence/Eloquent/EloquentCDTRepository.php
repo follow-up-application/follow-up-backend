@@ -51,10 +51,13 @@ class EloquentCDTRepository implements CursoDivisionTurnoRepositoryInterface
             ->toArray();
     }
 
-    public function destroy(int $id): void
+    public function inhabilitar(int $id): void
     {
-        // cascadeOnDelete en la migración se encarga de borrar alumnos también
-        CursoDivisionTurnoModel::destroy($id);
+        $model = CursoDivisionTurnoModel::find($id);
+
+        if ($model) {
+            $model->delete();
+        }
     }
 
     private function toDomain(CursoDivisionTurnoModel $cdtModel): CursoDivisionTurno

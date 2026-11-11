@@ -67,7 +67,7 @@ class AdminController extends Controller
         return response()->json(new AdminResource($admin), 200);
     }
 
-    public function destroy(string $id): JsonResponse
+    public function inhabilitar(string $id): JsonResponse
     {
         $admin = $this->adminRepository->findById(new UserId($id));
 
@@ -75,9 +75,9 @@ class AdminController extends Controller
             return response()->json(['message' => 'Admin no encontrado'], 404);
         }
 
-        $this->adminRepository->delete(new UserId($id));
+        $this->adminRepository->inhabilitar(new UserId($id));
 
-        return response()->json('Admin eliminado', 204);
+        return response()->json('Admin inhabilitado', 204);
     }
 
     public function statistics(): JsonResponse

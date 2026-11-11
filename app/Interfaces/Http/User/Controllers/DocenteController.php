@@ -64,10 +64,16 @@ class DocenteController extends Controller
         return response()->json(new DocenteResource($docente), 200);
     }
 
-    public function destroy(string $id): JsonResponse
+    public function inhabilitar(string $id): JsonResponse
     {
-        $this->docenteRepository->destroy(new UserId($id));
+        $docente = $this->docenteRepository->findById(new UserId($id));
 
-        return response()->json('Docente eliminado', 204);
+        if (!$docente) {
+            return response()->json(['message' => 'Docente no encontrado'], 404);
+        }
+
+        $this->docenteRepository->inhabilitar(new UserId($id));
+
+        return response()->json('Docente inhabilitado', 204);
     }
 }

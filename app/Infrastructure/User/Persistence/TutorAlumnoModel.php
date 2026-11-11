@@ -4,10 +4,12 @@ namespace App\Infrastructure\User\Persistence;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TutorAlumnoModel extends Model
 {
     use HasUuids;
+    use SoftDeletes;
 
     protected $table = 'tutor_alumno';
 

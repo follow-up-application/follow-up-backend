@@ -64,7 +64,7 @@ class UserController extends Controller
         return response()->json(new UserResource($user), 200);
     }
 
-    public function destroy(string $id): JsonResponse
+    public function inhabilitar(string $id): JsonResponse
     {
         $user = $this->userRepository->findById(new UserId($id));
 
@@ -72,9 +72,9 @@ class UserController extends Controller
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
 
-        $this->userRepository->delete(new UserId($id));
+        $this->userRepository->inhabilitar(new UserId($id));
 
-        return response()->json('Usuario eliminado', 204);
+        return response()->json('Usuario inhabilitado', 204);
     }
 
     public function me(Request $request): JsonResponse

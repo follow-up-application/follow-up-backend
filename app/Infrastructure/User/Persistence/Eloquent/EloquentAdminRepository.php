@@ -53,11 +53,15 @@ class EloquentAdminRepository implements AdminRepositoryInterface
             ->toArray();
     }
 
-    public function delete(UserId $id): void
+    public function inhabilitar(UserId $id): void
     {
-        UserModel::where('id', $id->value())
+        $model = UserModel::where('id', $id->value())
             ->where('role', UserRole::ADMINISTRADOR->value)
-            ->delete();
+            ->first();
+
+        if ($model) {
+            $model->delete();
+        }
     }
 
     private function toDomain(UserModel $userModel): Admin

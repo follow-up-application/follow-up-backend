@@ -3,7 +3,6 @@
 namespace App\Interfaces\Http\User\Controllers;
 
 use App\Application\TutorAlumno\DTOs\StoreTutorAlumnoDTO;
-use App\Application\TutorAlumno\UseCases\DeleteTutorAlumnoUseCase;
 use App\Application\TutorAlumno\UseCases\StoreTutorAlumnoUseCase;
 use App\Domain\User\Repositories\AlumnoRepositoryInterface;
 use App\Domain\User\Repositories\TutorAlumnoRepositoryInterface;
@@ -18,7 +17,6 @@ class TutorAlumnoController extends Controller
 {
     public function __construct(
         private readonly StoreTutorAlumnoUseCase $storeTutorAlumnoUseCase,
-        private readonly DeleteTutorAlumnoUseCase $deleteTutorAlumnoUseCase,
         private readonly TutorAlumnoRepositoryInterface $tutorAlumnoRepository,
         private readonly TutorRepositoryInterface $tutorRepository,
         private readonly AlumnoRepositoryInterface $alumnoRepository,
@@ -39,7 +37,7 @@ class TutorAlumnoController extends Controller
         ], 201);
     }
 
-    public function destroy(string $id): JsonResponse
+    public function inhabilitar(string $id): JsonResponse
     {
         $vinculo = $this->tutorAlumnoRepository->findById(new UserId($id));
 
@@ -47,9 +45,9 @@ class TutorAlumnoController extends Controller
             return response()->json(['message' => 'Vínculo tutor-alumno no encontrado'], 404);
         }
 
-        $this->deleteTutorAlumnoUseCase->execute($id);
+        $this->tutorAlumnoRepository->inhabilitar(new UserId($id));
 
-        return response()->json('Vínculo eliminado', 204);
+        return response()->json('Vínculo inhabilitado', 204);
     }
 
     public function byAlumno(string $id): JsonResponse

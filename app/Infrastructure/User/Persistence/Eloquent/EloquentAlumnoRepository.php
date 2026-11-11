@@ -77,10 +77,19 @@ class EloquentAlumnoRepository implements AlumnoRepositoryInterface
             ->toArray();
     }
 
-    public function destroy(UserId $id): void
+    public function inhabilitar(UserId $id): void
     {
-        // cascadeOnDelete en la migración se encarga de borrar alumnos también
-        UserModel::destroy($id->value());
+        $alumnoModel = AlumnoModel::find($id->value());
+
+        if ($alumnoModel) {
+            $alumnoModel->delete();
+        }
+
+        $userModel = UserModel::find($id->value());
+
+        if ($userModel) {
+            $userModel->delete();
+        }
     }
 
     public function totalAlumnos(): int

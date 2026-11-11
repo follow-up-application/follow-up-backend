@@ -4,9 +4,11 @@ namespace App\Infrastructure\User\Persistence;
 
 use App\Domain\User\ValueObjects\EstadoInscripcion;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InscripcionModel extends Model
 {
+    use SoftDeletes;
     protected $table = 'inscripciones';
 
     protected $fillable = [

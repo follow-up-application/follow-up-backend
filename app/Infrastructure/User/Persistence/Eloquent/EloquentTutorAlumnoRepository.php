@@ -57,9 +57,13 @@ class EloquentTutorAlumnoRepository implements TutorAlumnoRepositoryInterface
             ->toArray();
     }
 
-    public function delete(UserId $id): void
+    public function inhabilitar(UserId $id): void
     {
-        TutorAlumnoModel::destroy($id->value());
+        $model = TutorAlumnoModel::find($id->value());
+
+        if ($model) {
+            $model->delete();
+        }
     }
 
     private function toDomain(TutorAlumnoModel $model): TutorAlumno

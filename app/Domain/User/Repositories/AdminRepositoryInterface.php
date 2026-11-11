@@ -11,5 +11,5 @@ interface AdminRepositoryInterface
     public function findById(UserId $id): ?Admin;
     public function findByUsername(string $username): ?Admin;
     public function all(): array;
-    public function delete(UserId $id): void;
+    public function inhabilitar(UserId $id): void;
 }

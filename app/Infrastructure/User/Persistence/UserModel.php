@@ -5,12 +5,14 @@ namespace App\Infrastructure\User\Persistence;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
 class UserModel extends Authenticatable
 {
     use HasApiTokens;
     use HasUuids;
+    use SoftDeletes;
     use Notifiable;
 
     protected $table = 'users';

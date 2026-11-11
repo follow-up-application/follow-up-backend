@@ -63,10 +63,16 @@ class AlumnoController extends Controller
         return response()->json(new AlumnoResource($alumno), 200);
     }
 
-    public function destroy(string $id): JsonResponse
+    public function inhabilitar(string $id): JsonResponse
     {
-        $this->alumnoRepository->destroy(new UserId($id));
+        $alumno = $this->alumnoRepository->findById(new UserId($id));
 
-        return response()->json('Alumno eliminado', 204);
+        if (!$alumno) {
+            return response()->json(['message' => 'Alumno no encontrado'], 404);
+        }
+
+        $this->alumnoRepository->inhabilitar(new UserId($id));
+
+        return response()->json('Alumno inhabilitado', 204);
     }
 }

@@ -33,13 +33,15 @@ Route::prefix('v1')->group(function () {
         // si el apiResource lo declarara, Laravel matchearía esa ruta primero y
         // el alumno y el tutor recibirían 403 al ver su propio registro.
         Route::middleware('role:administrador,docente')->group(function () {
-            Route::apiResource('alumnos', AlumnoController::class)->except(['show']);
+            Route::apiResource('alumnos', AlumnoController::class)->except(['show', 'destroy']);
+            Route::patch('alumnos/{id}/inhabilitar', [AlumnoController::class, 'inhabilitar']);
         });
 
         // ── Curso Division Turno ──
         // Solo Admin gestiona el CRUD completo de Curso Division Turno
         Route::middleware('role:administrador')->group(function () {
-            Route::apiResource('cursoDivisionTurno', CursoDivisionTurnoController::class);
+            Route::apiResource('cursoDivisionTurno', CursoDivisionTurnoController::class)->except(['destroy']);
+            Route::patch('cursoDivisionTurno/{id}/inhabilitar', [CursoDivisionTurnoController::class, 'inhabilitar']);
         });
 
         // El propio alumno, su tutor, docente o admin pueden ver el detalle
@@ -55,13 +57,15 @@ Route::prefix('v1')->group(function () {
         // ── Docentes ──
         // Solo Admin gestiona altas/bajas/modificaciones de docentes
         Route::middleware('role:administrador')->group(function () {
-            Route::apiResource('docentes', DocenteController::class);
+            Route::apiResource('docentes', DocenteController::class)->except(['destroy']);
+            Route::patch('docentes/{id}/inhabilitar', [DocenteController::class, 'inhabilitar']);
         });
 
         // ── Materias ──
         // Solo Admin gestiona altas/bajas/modificaciones de materias
         Route::middleware('role:administrador')->group(function () {
-            Route::apiResource('materias', MateriaController::class);
+            Route::apiResource('materias', MateriaController::class)->except(['destroy']);
+            Route::patch('materias/{id}/inhabilitar', [MateriaController::class, 'inhabilitar']);
         });
 
         // Un docente es jefe de 0 a muchas materias
@@ -84,16 +88,13 @@ Route::prefix('v1')->group(function () {
             Route::put('inscripciones/{id}/estado', [InscripcionController::class, 'updateEstado']);
         });
 
-        Route::middleware('role:administrador')->group(function () {
-            Route::delete('inscripciones/{id}', [InscripcionController::class, 'destroy']);
-        });
-
         // ── Tutores ──
         // Solo Admin gestiona tutores (salvo el registro público ya definido arriba).
         // show() queda fuera por la misma razón que en alumnos: la ruta
         // generalizada de abajo debe ser la que matchee.
         Route::middleware('role:administrador')->group(function () {
-            Route::apiResource('tutores', TutorController::class)->except(['show']);
+            Route::apiResource('tutores', TutorController::class)->except(['show', 'destroy']);
+            Route::patch('tutores/{id}/inhabilitar', [TutorController::class, 'inhabilitar']);
         });
         // El propio tutor o un admin pueden ver el detalle y los alumnos asociados
         Route::middleware('role:administrador,tutor')->group(function () {
@@ -108,14 +109,15 @@ Route::prefix('v1')->group(function () {
             Route::get('admins/estadisticas', [AdminController::class, 'statistics']);
             Route::get('admins/{id}', [AdminController::class, 'show']);
             Route::get('admins', [AdminController::class, 'index']);
-            Route::apiResource('admins', AdminController::class);
+            Route::apiResource('admins', AdminController::class)->except(['destroy']);
+            Route::patch('admins/{id}/inhabilitar', [AdminController::class, 'inhabilitar']);
         });
 
         // ── Usuarios (CRUD base) ──
         Route::middleware('role:administrador')->group(function () {
             Route::get('users/{id}', [UserController::class, 'show']);
             Route::put('users/{id}', [UserController::class, 'update']);
-            Route::delete('users/{id}', [UserController::class, 'destroy']);
+            Route::patch('users/{id}/inhabilitar', [UserController::class, 'inhabilitar']);
         });
 
         // Perfil del usuario autenticado
@@ -126,7 +128,7 @@ Route::prefix('v1')->group(function () {
         // ── Vínculos Tutor-Alumno ──
         Route::middleware('role:administrador')->group(function () {
             Route::post('tutor-alumno', [TutorAlumnoController::class, 'store']);
-            Route::delete('tutor-alumno/{id}', [TutorAlumnoController::class, 'destroy']);
+            Route::patch('tutor-alumno/{id}/inhabilitar', [TutorAlumnoController::class, 'inhabilitar']);
         });
 
         Route::middleware('role:administrador,tutor,alumno')->group(function () {

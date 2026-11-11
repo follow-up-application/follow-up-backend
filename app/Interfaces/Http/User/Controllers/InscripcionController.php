@@ -6,7 +6,6 @@ use App\Application\Inscripcion\DTOs\CambiarEstadoInscripcionDTO;
 use App\Application\Inscripcion\DTOs\CreateInscripcionDTO;
 use App\Application\Inscripcion\UseCases\CambiarEstadoInscripcionUseCase;
 use App\Application\Inscripcion\UseCases\CreateInscripcionUseCase;
-use App\Application\Inscripcion\UseCases\DeleteInscripcionUseCase;
 use App\Application\Inscripcion\UseCases\GetAllInscripcionesUseCase;
 use App\Application\Inscripcion\UseCases\GetInscripcionesByAlumnoUseCase;
 use App\Application\Inscripcion\UseCases\GetInscripcionesByMateriaUseCase;
@@ -28,7 +27,6 @@ class InscripcionController extends Controller
         private readonly GetInscripcionesByAlumnoUseCase $getInscripcionesByAlumnoUseCase,
         private readonly GetInscripcionesByMateriaUseCase $getInscripcionesByMateriaUseCase,
         private readonly CambiarEstadoInscripcionUseCase $cambiarEstadoInscripcionUseCase,
-        private readonly DeleteInscripcionUseCase $deleteInscripcionUseCase,
         private readonly InscripcionRepositoryInterface $inscripcionRepository,
     ) {}
 
@@ -92,9 +90,7 @@ class InscripcionController extends Controller
 
     public function destroy(string $id): JsonResponse
     {
-        $this->deleteInscripcionUseCase->execute(intval($id));
-
-        return response()->json('Inscripción eliminada', 204);
+        return response()->json(['message' => 'No se permite eliminar inscripciones. Use cambio de estado (rechazado).'], 405);
     }
 
     /**
