@@ -13,5 +13,5 @@ interface UserRepositoryInterface
     public function findById(UserId $id): ?User;
     public function findByUsername(string $username): ?User;
     public function all(): array;
-    public function delete(UserId $id): void;
+    public function inhabilitar(UserId $id): void;
 }

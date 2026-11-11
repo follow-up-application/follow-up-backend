@@ -70,10 +70,19 @@ public function findByUsername(string $username): ?Docente
             ->toArray();
     }
 
-    public function destroy(UserId $id): void
+    public function inhabilitar(UserId $id): void
     {
-        // cascadeOnDelete en la migración se encarga de borrar docentes también
-        UserModel::destroy($id->value());
+        $docenteModel = DocenteModel::find($id->value());
+
+        if ($docenteModel) {
+            $docenteModel->delete();
+        }
+
+        $userModel = UserModel::find($id->value());
+
+        if ($userModel) {
+            $userModel->delete();
+        }
     }
 
     private function toDomain(UserModel $userModel, DocenteModel $docenteModel): Docente

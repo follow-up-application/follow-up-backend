@@ -11,5 +11,5 @@ interface DocenteRepositoryInterface
     public function findById(UserId $id): ?Docente;
     public function findByUsername(string $username): ?Docente;
     public function all(): array;
-    public function destroy(UserId $id): void;
+    public function inhabilitar(UserId $id): void;
 }

@@ -5,9 +5,11 @@ namespace App\Infrastructure\User\Persistence;
 use App\Domain\User\Entities\CursoDivisionTurno;
 use App\Domain\User\ValueObjects\TurnoEscolar;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CursoDivisionTurnoModel extends Model
 {
+    use SoftDeletes;
     protected $table = 'curso_division_turno';
 
     protected $fillable = [

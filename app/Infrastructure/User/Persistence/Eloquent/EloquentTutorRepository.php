@@ -87,12 +87,19 @@ class EloquentTutorRepository implements TutorRepositoryInterface
             ->toArray();
     }
 
-    public function delete(UserId $id): void
+    public function inhabilitar(UserId $id): void
     {
-        // Se borra el users y no el tutor: el cascadeOnDelete de la migración
-        // va de tutores.id a users.id, así que al borrar la fila hija quedaba
-        // un usuario huérfano con DNI, email y hash de contraseña.
-        UserModel::destroy($id->value());
+        $tutorModel = TutorModel::find($id->value());
+
+        if ($tutorModel) {
+            $tutorModel->delete();
+        }
+
+        $userModel = UserModel::find($id->value());
+
+        if ($userModel) {
+            $userModel->delete();
+        }
     }
 
     public function totalTutores(): int

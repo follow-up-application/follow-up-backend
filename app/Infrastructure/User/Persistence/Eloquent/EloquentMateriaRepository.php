@@ -74,9 +74,13 @@ class EloquentMateriaRepository implements MateriaRepositoryInterface
             ->toArray();
     }
 
-    public function destroy(int $id): void
+    public function inhabilitar(int $id): void
     {
-        MateriaModel::destroy($id);
+        $model = MateriaModel::find($id);
+
+        if ($model) {
+            $model->delete();
+        }
     }
 
     private function toDomain(MateriaModel $model): Materia

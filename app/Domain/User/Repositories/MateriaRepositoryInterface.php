@@ -27,5 +27,5 @@ interface MateriaRepositoryInterface
 
     /** @return Materia[] */
     public function all(): array;
-    public function destroy(int $id): void;
+    public function inhabilitar(int $id): void;
 }

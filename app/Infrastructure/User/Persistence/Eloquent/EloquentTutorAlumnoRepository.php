@@ -8,7 +8,6 @@ use App\Domain\User\ValueObjects\CodigoInstitucional;
 use App\Domain\User\ValueObjects\TutorAlumnoRelation;
 use App\Domain\User\ValueObjects\UserId;
 use App\Infrastructure\User\Persistence\TutorAlumnoModel;
-use App\Infrastructure\User\Persistence\TutorModel;
 
 class EloquentTutorAlumnoRepository implements TutorAlumnoRepositoryInterface
 {
@@ -17,11 +16,11 @@ class EloquentTutorAlumnoRepository implements TutorAlumnoRepositoryInterface
         TutorAlumnoModel::updateOrCreate(
             ['id' => $tutorAlumno->id()->value()],
             [
-                'alumno_id'             => $tutorAlumno->alumnoId()->value(),
-                'tutor_id'              => $tutorAlumno->tutorId()->value(),
-                'relationship'          => $tutorAlumno->relationship()->value,
-                'otra_relacion'         => $tutorAlumno->otraRelacion(),
-                'codigo_institucional'  => $tutorAlumno->codigoInstitucional()->value(),
+                'alumno_id' => $tutorAlumno->alumnoId()->value(),
+                'tutor_id' => $tutorAlumno->tutorId()->value(),
+                'relationship' => $tutorAlumno->relationship()->value,
+                'otra_relacion' => $tutorAlumno->otraRelacion(),
+                'codigo_institucional' => $tutorAlumno->codigoInstitucional()->value(),
             ]
         );
     }
@@ -29,6 +28,7 @@ class EloquentTutorAlumnoRepository implements TutorAlumnoRepositoryInterface
     public function findById(UserId $id): ?TutorAlumno
     {
         $model = TutorAlumnoModel::find($id->value());
+
         return $model ? $this->toDomain($model) : null;
     }
 
@@ -55,6 +55,15 @@ class EloquentTutorAlumnoRepository implements TutorAlumnoRepositoryInterface
             ->get()
             ->map(fn (TutorAlumnoModel $m) => $this->toDomain($m))
             ->toArray();
+    }
+
+    public function inhabilitar(UserId $id): void
+    {
+        $model = TutorAlumnoModel::find($id->value());
+
+        if ($model) {
+            $model->delete();
+        }
     }
 
     private function toDomain(TutorAlumnoModel $model): TutorAlumno

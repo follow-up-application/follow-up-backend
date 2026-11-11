@@ -7,10 +7,12 @@ use App\Domain\User\ValueObjects\UserId;
 use App\Infrastructure\User\Persistence\Eloquent\EloquentAlumnoRepository;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AlumnoModel extends Model
 {
     use HasUuids;
+    use SoftDeletes;
 
     protected $table = 'alumnos';
 

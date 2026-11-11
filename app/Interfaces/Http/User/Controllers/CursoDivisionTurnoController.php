@@ -62,10 +62,16 @@ class CursoDivisionTurnoController extends Controller
         return response()->json(new CDTResource($cdt), 200);
     }
 
-    public function destroy(string $id): JsonResponse
+    public function inhabilitar(string $id): JsonResponse
     {
-        $this->cursoDivisionTurnoRepository->destroy(intval($id));
+        $cdt = $this->cursoDivisionTurnoRepository->findById(intval($id));
 
-        return response()->json('Curso Division Turno eliminado', 204);
+        if (!$cdt) {
+            return response()->json(['message' => 'Curso Division Turno no encontrado'], 404);
+        }
+
+        $this->cursoDivisionTurnoRepository->inhabilitar(intval($id));
+
+        return response()->json('Curso Division Turno inhabilitado', 204);
     }
 }

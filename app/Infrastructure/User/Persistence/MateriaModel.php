@@ -3,9 +3,11 @@
 namespace App\Infrastructure\User\Persistence;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MateriaModel extends Model
 {
+    use SoftDeletes;
     protected $table = 'materias';
 
     protected $fillable = [

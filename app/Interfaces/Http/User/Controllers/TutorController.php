@@ -99,11 +99,17 @@ class TutorController extends Controller
         return response()->json($alumnos, 200);
     }
 
-    public function destroy(string $id): JsonResponse
+    public function inhabilitar(string $id): JsonResponse
     {
-        $this->tutorRepository->delete(new UserId($id));
+        $tutor = $this->tutorRepository->findById(new UserId($id));
 
-        return response()->json('Tutor eliminado', 204);
+        if (!$tutor) {
+            return response()->json(['message' => 'Tutor no encontrado'], 404);
+        }
+
+        $this->tutorRepository->inhabilitar(new UserId($id));
+
+        return response()->json('Tutor inhabilitado', 204);
     }
 
     public function findByDni(string $dni): JsonResponse

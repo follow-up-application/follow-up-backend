@@ -42,9 +42,13 @@ class EloquentUserRepository implements UserRepositoryInterface
         return $model ? $this->toDomain($model) : null;
     }
 
-    public function delete(UserId $id): void
+    public function inhabilitar(UserId $id): void
     {
-        UserModel::destroy($id->value());
+        $model = UserModel::find($id->value());
+
+        if ($model) {
+            $model->delete();
+        }
     }
 
     public function all(): array

@@ -81,10 +81,16 @@ class MateriaController extends Controller
         return response()->json(new MateriaResource($materia), 200);
     }
 
-    public function destroy(string $id): JsonResponse
+    public function inhabilitar(string $id): JsonResponse
     {
-        $this->materiaRepository->destroy(intval($id));
+        $materia = $this->materiaRepository->findById(intval($id));
 
-        return response()->json('Materia eliminada', 204);
+        if (!$materia) {
+            return response()->json(['message' => 'Materia no encontrada'], 404);
+        }
+
+        $this->materiaRepository->inhabilitar(intval($id));
+
+        return response()->json('Materia inhabilitada', 204);
     }
 }
