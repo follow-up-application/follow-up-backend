@@ -27,3 +27,5 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+docs/PLAN-MIGRACION-EXPRESS.md
+tpi.md

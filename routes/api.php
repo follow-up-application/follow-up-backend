@@ -1,12 +1,13 @@
 <?php
 
 use App\Interfaces\Http\User\Controllers\AdminController;
-use App\Interfaces\Http\User\Controllers\AuthController;
 use App\Interfaces\Http\User\Controllers\AlumnoController;
+use App\Interfaces\Http\User\Controllers\AuthController;
 use App\Interfaces\Http\User\Controllers\CursoDivisionTurnoController;
 use App\Interfaces\Http\User\Controllers\DocenteController;
 use App\Interfaces\Http\User\Controllers\InscripcionController;
 use App\Interfaces\Http\User\Controllers\MateriaController;
+use App\Interfaces\Http\User\Controllers\TutorAlumnoController;
 use App\Interfaces\Http\User\Controllers\TutorController;
 use App\Interfaces\Http\User\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -108,6 +109,28 @@ Route::prefix('v1')->group(function () {
             Route::get('admins/{id}', [AdminController::class, 'show']);
             Route::get('admins', [AdminController::class, 'index']);
             Route::apiResource('admins', AdminController::class);
+        });
+
+        // ── Usuarios (CRUD base) ──
+        Route::middleware('role:administrador')->group(function () {
+            Route::get('users/{id}', [UserController::class, 'show']);
+            Route::put('users/{id}', [UserController::class, 'update']);
+            Route::delete('users/{id}', [UserController::class, 'destroy']);
+        });
+
+        // Perfil del usuario autenticado
+        Route::middleware('role:administrador,docente,tutor,alumno')->group(function () {
+            Route::get('users/me', [UserController::class, 'me']);
+        });
+
+        // ── Vínculos Tutor-Alumno ──
+        Route::middleware('role:administrador')->group(function () {
+            Route::post('tutor-alumno', [TutorAlumnoController::class, 'store']);
+            Route::delete('tutor-alumno/{id}', [TutorAlumnoController::class, 'destroy']);
+        });
+
+        Route::middleware('role:administrador,tutor,alumno')->group(function () {
+            Route::get('alumnos/{id}/tutores', [TutorAlumnoController::class, 'byAlumno']);
         });
     });
 });
