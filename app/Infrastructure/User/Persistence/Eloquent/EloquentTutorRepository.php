@@ -16,12 +16,14 @@ class EloquentTutorRepository implements TutorRepositoryInterface
         $userModel = UserModel::updateOrCreate(
             ['id' => $tutor->id()->value()],
             [
-                'first_name'           => $tutor->firstName(),
-                'last_name'            => $tutor->lastName(),
-                'dni'                  => $tutor->dni(),
-                'password'             => $tutor->password(),
-                'telephone'            => $tutor->telephone(),
-                'role'                 => $tutor->role()->value,
+                'first_name' => $tutor->firstName(),
+                'last_name' => $tutor->lastName(),
+                'dni' => $tutor->dni(),
+                // El tutor inicia sesión con su email: sin esta columna el
+                // alta directa quedaba con username NULL y no podía loguearse.
+                'username' => $tutor->username(),
+                'password' => $tutor->password(),
+                'role' => $tutor->role()->value,
                 'must_change_password' => $tutor->mustChangePassword(),
             ]
         );
@@ -29,8 +31,8 @@ class EloquentTutorRepository implements TutorRepositoryInterface
         $tutorModel = TutorModel::updateOrCreate(
             ['id' => $userModel->id],
             [
-                'email'         => $tutor->email()?->value(),
-                'telephone'     => $tutor->telephone()
+                'email' => $tutor->email()?->value(),
+                'telephone' => $tutor->telephone(),
             ]
         );
 
@@ -41,7 +43,9 @@ class EloquentTutorRepository implements TutorRepositoryInterface
     {
         $userModel = UserModel::find($id->value());
 
-        if (!$userModel) return null;
+        if (! $userModel) {
+            return null;
+        }
 
         $tutorModel = TutorModel::where('id', $userModel->id)->first();
 
@@ -52,7 +56,9 @@ class EloquentTutorRepository implements TutorRepositoryInterface
     {
         $userModel = UserModel::where('dni', $dni)->first();
 
-        if (!$userModel) return null;
+        if (! $userModel) {
+            return null;
+        }
 
         $tutorModel = TutorModel::where('id', $userModel->id)->first();
 
@@ -61,27 +67,32 @@ class EloquentTutorRepository implements TutorRepositoryInterface
 
     public function findByUsername(string $username): ?Tutor
     {
-        $tutorModel = TutorModel::where('username', $username)->first();
+        // username vive en users, no en tutores.
+        $userModel = UserModel::where('username', $username)->first();
 
-        if (!$tutorModel) return null;
+        if (! $userModel) {
+            return null;
+        }
 
-        $userModel = UserModel::find($tutorModel->id);
+        $tutorModel = TutorModel::where('id', $userModel->id)->first();
 
-        return $userModel ? $this->toDomain($userModel, $tutorModel) : null;
+        return $tutorModel ? $this->toDomain($userModel, $tutorModel) : null;
     }
 
     public function all(): array
     {
         return TutorModel::with('user')
             ->get()
-            ->map(fn(TutorModel $model) => $this->toDomain($model->user, $model))
+            ->map(fn (TutorModel $model) => $this->toDomain($model->user, $model))
             ->toArray();
     }
 
     public function delete(UserId $id): void
     {
-        // cascadeOnDelete en la migración se encarga de borrar docentes también
-        TutorModel::destroy($id->value());
+        // Se borra el users y no el tutor: el cascadeOnDelete de la migración
+        // va de tutores.id a users.id, así que al borrar la fila hija quedaba
+        // un usuario huérfano con DNI, email y hash de contraseña.
+        UserModel::destroy($id->value());
     }
 
     public function totalTutores(): int
@@ -91,7 +102,7 @@ class EloquentTutorRepository implements TutorRepositoryInterface
 
     private function toDomain(UserModel $userModel, TutorModel $tutorModel): Tutor
     {
-        return new Tutor(
+        $tutor = new Tutor(
             new UserId($userModel->id),
             $userModel->first_name,
             $userModel->last_name,
@@ -101,5 +112,16 @@ class EloquentTutorRepository implements TutorRepositoryInterface
                 ? new UserEmail($tutorModel->email)
                 : null
         );
+
+        // El constructor de Tutor no recibe el hash y deja password en null.
+        // Sin restaurarlo acá, cualquier save() posterior (por ejemplo un
+        // PUT /tutores/{id}) escribía password = NULL y el tutor se quedaba
+        // sin poder iniciar sesión.
+        $tutor->updatePassword(
+            (string) $userModel->password,
+            (bool) $userModel->must_change_password,
+        );
+
+        return $tutor;
     }
 }

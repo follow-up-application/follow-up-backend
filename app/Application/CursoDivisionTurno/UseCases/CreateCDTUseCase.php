@@ -36,9 +36,9 @@ class CreateCDTUseCase
                 capacidad_maxima: $dto->capacidadMaxima,
             );
 
-            $this->cursoDivisionTurnoRepository->save($cdt);
+            $saved = $this->cursoDivisionTurnoRepository->save($cdt);
 
-            return $cdt;
+            return $saved;
         });
     }
 }

@@ -7,7 +7,7 @@ class CreateMateriaDTO
     public function __construct(
         public readonly string $nombre,
         public readonly string $descripcion,
-        public readonly string $turno,
+        public readonly int $cursoDivisionTurnoId,
         public readonly string $docenteId,
     ) {}
 
@@ -16,7 +16,7 @@ class CreateMateriaDTO
         return new self(
             nombre: $data['nombre'],
             descripcion: $data['descripcion'],
-            turno: $data['turno'],
+            cursoDivisionTurnoId: (int) $data['curso_division_turno_id'],
             docenteId: $data['docente_id'],
         );
     }

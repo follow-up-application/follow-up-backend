@@ -5,6 +5,7 @@ use App\Interfaces\Http\User\Controllers\AuthController;
 use App\Interfaces\Http\User\Controllers\AlumnoController;
 use App\Interfaces\Http\User\Controllers\CursoDivisionTurnoController;
 use App\Interfaces\Http\User\Controllers\DocenteController;
+use App\Interfaces\Http\User\Controllers\InscripcionController;
 use App\Interfaces\Http\User\Controllers\MateriaController;
 use App\Interfaces\Http\User\Controllers\TutorController;
 use App\Interfaces\Http\User\Controllers\UserController;
@@ -26,9 +27,12 @@ Route::prefix('v1')->group(function () {
         Route::put('password', [AuthController::class, 'changePassword']); // cualquier rol autenticado
 
         // ── Alumnos ──
-        // Admin y Docente gestionan el CRUD completo de alumnos
+        // Admin y Docente gestionan el CRUD completo de alumnos.
+        // show() queda fuera porque más abajo se registra con los cuatro roles:
+        // si el apiResource lo declarara, Laravel matchearía esa ruta primero y
+        // el alumno y el tutor recibirían 403 al ver su propio registro.
         Route::middleware('role:administrador,docente')->group(function () {
-            Route::apiResource('alumnos', AlumnoController::class);
+            Route::apiResource('alumnos', AlumnoController::class)->except(['show']);
         });
 
         // ── Curso Division Turno ──
@@ -40,6 +44,11 @@ Route::prefix('v1')->group(function () {
         // El propio alumno, su tutor, docente o admin pueden ver el detalle
         Route::middleware('role:administrador,docente,tutor,alumno')->group(function () {
             Route::get('alumnos/{id}', [AlumnoController::class, 'show']);
+        });
+
+        // Listado de materias por curso division turno (0 a muchas materias por CDT)
+        Route::middleware('role:administrador,docente')->group(function () {
+            Route::get('cursoDivisionTurno/{id}/materias', [MateriaController::class, 'byCursoDivisionTurno']);
         });
 
         // ── Docentes ──
@@ -54,10 +63,36 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('materias', MateriaController::class);
         });
 
-        // ── Tutores ──
-        // Solo Admin gestiona tutores (salvo el registro público ya definido arriba)
+        // Un docente es jefe de 0 a muchas materias
+        Route::middleware('role:administrador,docente')->group(function () {
+            Route::get('docentes/{id}/materias', [MateriaController::class, 'byDocente']);
+        });
+
+        // ── Inscripciones ──
+        // El alumno se inscribe en una o muchas materias; el admin y el docente
+        // gestionan las inscripciones (alta, estado y baja).
+        Route::middleware('role:administrador,alumno')->group(function () {
+            Route::post('inscripciones', [InscripcionController::class, 'store']);
+            Route::get('inscripciones', [InscripcionController::class, 'index']);
+            Route::get('inscripciones/{id}', [InscripcionController::class, 'show']);
+            Route::get('alumnos/{id}/inscripciones', [InscripcionController::class, 'byAlumno']);
+        });
+
+        Route::middleware('role:administrador,docente')->group(function () {
+            Route::get('materias/{id}/inscripciones', [InscripcionController::class, 'byMateria']);
+            Route::put('inscripciones/{id}/estado', [InscripcionController::class, 'updateEstado']);
+        });
+
         Route::middleware('role:administrador')->group(function () {
-            Route::apiResource('tutores', TutorController::class);
+            Route::delete('inscripciones/{id}', [InscripcionController::class, 'destroy']);
+        });
+
+        // ── Tutores ──
+        // Solo Admin gestiona tutores (salvo el registro público ya definido arriba).
+        // show() queda fuera por la misma razón que en alumnos: la ruta
+        // generalizada de abajo debe ser la que matchee.
+        Route::middleware('role:administrador')->group(function () {
+            Route::apiResource('tutores', TutorController::class)->except(['show']);
         });
         // El propio tutor o un admin pueden ver el detalle y los alumnos asociados
         Route::middleware('role:administrador,tutor')->group(function () {

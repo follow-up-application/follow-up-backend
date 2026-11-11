@@ -3,6 +3,8 @@
 namespace App\Interfaces\Http\User\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use App\Domain\User\ValueObjects\TutorAlumnoRelation;
 
 class CreateAlumnoRequest extends FormRequest
 {
@@ -21,9 +23,11 @@ class CreateAlumnoRequest extends FormRequest
             'fecha_nacimiento' => ['required', 'string', 'max:12'],
             'curso_division_turno_id' => ['required', 'integer', 'exists:curso_division_turno,id'],
 
-            // Relación con el tutor
-            'relationship' => ['required', 'string'],
-            'otra_relacion' => ['nullable', 'string', 'required_if:relationship,OTRA'],
+            // Relación con el tutor. El enum del dominio usa minúsculas
+            // ('padre', 'madre', 'otra'): en mayúsculas pasaba la validación y
+            // reventaba el use case con un ValueError.
+            'relationship' => ['required', 'string', Rule::enum(TutorAlumnoRelation::class)],
+            'otra_relacion' => ['nullable', 'string', 'max:100', 'required_if:relationship,otra'],
 
             // Tutor
             'tutor_id' => ['nullable', 'uuid'],

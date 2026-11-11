@@ -11,7 +11,7 @@ class CodigoInstitucional
     // 💡 Hacemos que reciba el valor opcionalmente en el constructor
     public function __construct(?string $value = null)
     {
-        // Si no se provee un valor, se autogenera (caso de creación de un Alumno nuevo)
+        // Si no se provee un valor, se autogenera (caso de un nuevo vínculo tutor/alumno)
         $codigoInst = $value ?? $this->generateCodigo();
 
         if (empty(trim($codigoInst))) {
@@ -35,6 +35,12 @@ class CodigoInstitucional
 
     private function generateCodigo(): string
     {
-        return sprintf('ALU-%s-%s', strtoupper(uniqid()), strtoupper(substr(md5((string)microtime(true)), 0, 5)));
+        // Formato ALU-XXXXXX-XXXXXX: prefijo fijo + dos bloques aleatorios de 6
+        // caracteres hexadecimales, por ejemplo ALU-A1B2C3-A1ECD.
+        return sprintf(
+            'ALU-%s-%s',
+            strtoupper(bin2hex(random_bytes(3))),
+            strtoupper(bin2hex(random_bytes(3))),
+        );
     }
 }

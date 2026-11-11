@@ -15,6 +15,7 @@ class AlumnoModel extends Model
     protected $table = 'alumnos';
 
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -35,6 +36,11 @@ class AlumnoModel extends Model
     public function cursoDivisionTurno()
     {
         return $this->belongsTo(CursoDivisionTurnoModel::class, 'curso_division_turno_id', 'id');
+    }
+
+    public function inscripciones()
+    {
+        return $this->hasMany(InscripcionModel::class, 'alumno_id', 'id');
     }
 
     public function toDomain(): Alumno

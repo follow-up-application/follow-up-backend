@@ -32,6 +32,11 @@ class CursoDivisionTurnoModel extends Model
         return $this->hasMany(DocenteModel::class, 'curso_division_turno_id', 'id');
     }
 
+    public function materias()
+    {
+        return $this->hasMany(MateriaModel::class, 'curso_division_turno_id', 'id');
+    }
+
     public function toDomain(): CursoDivisionTurno
     {
         return new CursoDivisionTurno(
