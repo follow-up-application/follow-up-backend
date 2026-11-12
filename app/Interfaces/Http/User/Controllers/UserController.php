@@ -79,10 +79,16 @@ class UserController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        $user = $request->user();
+        $model = $request->user();
+
+        if (! $model) {
+            return response()->json(['message' => 'No autenticado'], 401);
+        }
+
+        $user = $this->userRepository->findById(new UserId($model->id));
 
         if (! $user) {
-            return response()->json(['message' => 'No autenticado'], 401);
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
 
         return response()->json(new UserResource($user));

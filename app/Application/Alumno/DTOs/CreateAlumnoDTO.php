@@ -12,9 +12,10 @@ class CreateAlumnoDTO
         public readonly int $cursoDivisionTurnoId,
         public readonly string $relationship,
         public readonly ?string $otraRelacion,
+        public readonly ?string $tutorId,
         public readonly ?string $tutorFirstName,
         public readonly ?string $tutorLastName,
-        public readonly int $tutorDni,
+        public readonly ?int $tutorDni,
         public readonly ?string $tutorTelephone,
     ) {}
 
@@ -28,9 +29,10 @@ class CreateAlumnoDTO
             cursoDivisionTurnoId: (int) $data['curso_division_turno_id'],
             relationship: $data['relationship'],
             otraRelacion: $data['otra_relacion'] ?? null,
+            tutorId: $data['tutor_id'] ?? null,
             tutorFirstName: $data['tutor_first_name'] ?? null,
             tutorLastName: $data['tutor_last_name'] ?? null,
-            tutorDni: (int) $data['tutor_dni'],
+            tutorDni: isset($data['tutor_dni']) ? (int) $data['tutor_dni'] : null,
             tutorTelephone: $data['tutor_telephone'] ?? null,
         );
     }

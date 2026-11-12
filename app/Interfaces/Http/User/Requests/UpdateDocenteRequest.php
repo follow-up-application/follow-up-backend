@@ -2,6 +2,7 @@
 
 namespace App\Interfaces\Http\User\Requests;
 
+use App\Interfaces\Http\User\Requests\Rules\FechaValida;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateDocenteRequest extends FormRequest
@@ -18,7 +19,7 @@ class UpdateDocenteRequest extends FormRequest
             'last_name' => ['sometimes', 'required', 'string', 'max:100'],
             'dni' => ['sometimes', 'required', 'integer', 'digits_between:7,8'],
             'telephone' => ['sometimes', 'required', 'string', 'max:20'],
-            'fecha_ingreso' => ['sometimes', 'required', 'string', 'max:12'],
+            'fecha_ingreso' => ['sometimes', 'required', 'string', 'max:12', new FechaValida],
             'curso_division_turno_id' => ['sometimes', 'required', 'integer', 'exists:curso_division_turno,id'],
         ];
     }

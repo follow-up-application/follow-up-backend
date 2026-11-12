@@ -2,6 +2,7 @@
 
 namespace App\Interfaces\Http\User\Requests;
 
+use App\Interfaces\Http\User\Requests\Rules\FechaValida;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateInscripcionRequest extends FormRequest
@@ -16,7 +17,7 @@ class CreateInscripcionRequest extends FormRequest
         return [
             'alumno_id' => ['required', 'uuid', 'exists:alumnos,id'],
             'materia_id' => ['required', 'integer', 'exists:materias,id'],
-            'fecha_inscripcion' => ['nullable', 'date_format:d/m/Y'],
+            'fecha_inscripcion' => ['nullable', 'string', 'max:12', new FechaValida],
         ];
     }
 

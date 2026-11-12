@@ -1,6 +1,11 @@
 <?php
 
+use App\Domain\User\Exceptions\AlumnoYaInscriptoException;
+use App\Domain\User\Exceptions\CursoDivisionTurnoDuplicadoException;
 use App\Domain\User\Exceptions\DomainNotFoundException;
+use App\Domain\User\Exceptions\MateriaDuplicadaException;
+use App\Domain\User\Exceptions\TutorYaRegistradoException;
+use App\Interfaces\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,12 +20,19 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-        'role' => \App\Interfaces\Http\Middleware\EnsureUserHasRole::class,
+            'role' => EnsureUserHasRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (DomainNotFoundException $e, Request $request) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            $status = $e instanceof CursoDivisionTurnoDuplicadoException
+                || $e instanceof MateriaDuplicadaException
+                || $e instanceof AlumnoYaInscriptoException
+                || $e instanceof TutorYaRegistradoException
+                    ? 409
+                    : 404;
+
+            return response()->json(['message' => $e->getMessage()], $status);
         });
     })
     ->create();

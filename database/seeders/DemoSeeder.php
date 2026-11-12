@@ -213,8 +213,8 @@ class DemoSeeder extends Seeder
             ));
 
             $this->materias[] = [
-                'id' => $materia->id(),
-                'nombre' => $materia->nombre(),
+                'id' => $existente ? $existente->id : $materia->id(),
+                'nombre' => $existente ? $existente->nombre : $materia->nombre(),
                 'cdt' => $d[2],
                 'docente' => $docente['firstName'].' '.$docente['lastName'],
             ];
@@ -321,6 +321,7 @@ class DemoSeeder extends Seeder
                 cursoDivisionTurnoId: $this->cdtIds[$d[4]],
                 relationship: $d[5],
                 otraRelacion: $d[6],
+                tutorId: null,
                 tutorFirstName: $d[7],
                 tutorLastName: $d[8],
                 tutorDni: $d[9],
