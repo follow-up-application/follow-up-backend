@@ -1,16 +1,179 @@
 {
   "info": {
-    "name": "Follow-up Backend API",
-    "_postman_id": "follow-up-backend-collection",
-    "description": "Colección de Postman para la API REST del sistema Follow-up (Laravel 11). Base URL: http://127.0.0.1:8000/api/v1\n\nAutenticación: Laravel Sanctum (Bearer token). Obtener token con POST /login y usarlo en el header Authorization: Bearer <token>.\n\nRoles: administrador, docente, tutor, alumno.",
+    "name": "Follow-up Backend API - Autocontenida",
+    "_postman_id": "follow-up-backend-collection-self-contained",
+    "description": "Colección Postman autocontenida para la API Follow-up (Laravel + Sanctum).\n\nEjecutar con el Collection Runner en orden. La carpeta 00 - Setup crea un administrador nuevo, inicia sesión y prepara todos los datos necesarios (CDT, docente, tutor, alumnos, materia e inscripción). Las variables de IDs y tokens se capturan automáticamente.\n\nBase URL: http://127.0.0.1:8000/api/v1\nRequisitos: base de datos migrada y servidor Laravel levantado.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "runId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminUsername",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminPassword",
+      "value": "Admin123!",
+      "type": "string"
+    },
+    {
+      "key": "adminId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "secondAdminUsername",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "secondAdminId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "cdtId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "cdtCurso",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "cdtDivision",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "docenteId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "docenteDni",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tutorId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tutorDni",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "alumnoId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "alumnoDni",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "preAlumnoId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "preAlumnoDni",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "preTutorDni",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "preTutorId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tutorAlumnoId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "codigoInstitucional",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "registerTutorEmail",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "materiaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "materiaNombre",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "inscripcionId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userUsername",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userDni",
+      "value": "",
+      "type": "string"
+    }
+  ],
   "item": [
     {
-      "name": "Autenticación",
+      "name": "00 - Setup",
+      "description": "Crea el administrador de prueba, inicia sesión y captura el token.",
       "item": [
         {
-          "name": "Login",
+          "name": "Registrar administrador de prueba",
           "request": {
             "method": "POST",
             "header": [
@@ -19,70 +182,1711 @@
                 "value": "application/json"
               }
             ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admins/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admins",
+                "register"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"alumno@mail.com\",\n    \"password\": \"12345678\"\n}"
+              "raw": "{\n  \"first_name\": \"Admin\",\n  \"last_name\": \"Postman\",\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"adminId\", json.id);",
+                  "pm.test(\"admin creado\", function () { pm.expect(json.role).to.eql(\"administrador\"); });"
+                ],
+                "type": "text/javascript"
+              }
             },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const runId = String(Date.now()).slice(-9);",
+                  "const base = Number(runId.slice(-7));",
+                  "pm.collectionVariables.set(\"runId\", runId);",
+                  "pm.collectionVariables.set(\"token\", \"\");",
+                  "pm.collectionVariables.set(\"adminUsername\", \"admin_\" + runId);",
+                  "pm.collectionVariables.set(\"adminPassword\", \"Admin123!\");",
+                  "pm.collectionVariables.set(\"secondAdminUsername\", \"admin2_\" + runId);",
+                  "pm.collectionVariables.set(\"docenteDni\", String(10000000 + base));",
+                  "pm.collectionVariables.set(\"tutorDni\", String(20000000 + base));",
+                  "pm.collectionVariables.set(\"alumnoDni\", String(30000000 + base));",
+                  "pm.collectionVariables.set(\"preAlumnoDni\", String(40000000 + base));",
+                  "pm.collectionVariables.set(\"preTutorDni\", String(50000000 + base));",
+                  "pm.collectionVariables.set(\"userDni\", String(60000000 + base));",
+                  "pm.collectionVariables.set(\"userUsername\", \"user_\" + runId);",
+                  "pm.collectionVariables.set(\"registerTutorEmail\", \"tutor_reg_\" + runId + \"@example.com\");",
+                  "pm.collectionVariables.set(\"materiaNombre\", \"Materia \" + runId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login administrador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "login"
+              ]
             },
-            "description": "Inicia sesión y devuelve un token Bearer. Guardar el token para usarlo en endpoints protegidos."
-          }
-        },
-        {
-          "name": "Logout",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/logout",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "logout"]
+            "auth": {
+              "type": "noauth"
             },
-            "description": "Cierra la sesión eliminando el token actual."
-          }
-        },
-        {
-          "name": "Cambiar contraseña",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"password\": \"nuevaPassword123\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/password",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "password"]
-            },
-            "description": "Cambia la contraseña del usuario autenticado. Cualquier rol autenticado."
-          }
+              "raw": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"token\", json.token);",
+                  "pm.test(\"token recibido\", function () { pm.expect(json.token).to.be.a(\"string\").and.not.empty; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "Usuarios (base)",
+      "name": "01 - Autenticación",
+      "item": [
+        {
+          "name": "Perfil del usuario autenticado (me)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Curso División Turno",
+      "item": [
+        {
+          "name": "Crear CDT",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "cursoDivisionTurno"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curso\": \"{{cdtCurso}}\",\n  \"division\": \"{{cdtDivision}}\",\n  \"turno\": \"Mañana\",\n  \"capacidad_maxima\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"cdtId\", json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const runId = pm.collectionVariables.get(\"runId\") || String(Date.now()).slice(-9);",
+                  "const n = Number(runId.slice(-4));",
+                  "pm.collectionVariables.set(\"cdtCurso\", String((n % 7) + 1));",
+                  "pm.collectionVariables.set(\"cdtDivision\", String.fromCharCode(65 + (n % 26)));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar CDT",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "cursoDivisionTurno"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener CDT por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno/{{cdtId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "cursoDivisionTurno",
+                "{{cdtId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar CDT",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno/{{cdtId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "cursoDivisionTurno",
+                "{{cdtId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capacidad_maxima\": 35\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Docentes",
+      "item": [
+        {
+          "name": "Crear docente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/docentes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "docentes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Docente\",\n  \"last_name\": \"Postman\",\n  \"dni\": \"{{docenteDni}}\",\n  \"telephone\": \"3512345678\",\n  \"fecha_ingreso\": \"2020-03-01\",\n  \"curso_division_turno_id\": \"{{cdtId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"docenteId\", json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar docentes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/docentes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "docentes"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener docente por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/docentes/{{docenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "docentes",
+                "{{docenteId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar docente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/docentes/{{docenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "docentes",
+                "{{docenteId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telephone\": \"3519876543\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Tutores",
+      "item": [
+        {
+          "name": "Crear tutor (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tutores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutores"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Tutor\",\n  \"last_name\": \"Postman\",\n  \"dni\": \"{{tutorDni}}\",\n  \"telephone\": \"3511112222\",\n  \"email\": \"tutor_{{runId}}@example.com\",\n  \"password\": \"Password123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"tutorId\", json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar tutores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tutores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutores"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener tutor por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tutores/{{tutorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutores",
+                "{{tutorId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar tutor por DNI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tutores/dni/{{tutorDni}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutores",
+                "dni",
+                "{{tutorDni}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar tutor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tutores/{{tutorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutores",
+                "{{tutorId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telephone\": \"3515556666\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - Alumnos",
+      "item": [
+        {
+          "name": "Crear alumno principal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alumnos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alumnos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Alumno\",\n  \"last_name\": \"Postman\",\n  \"dni\": \"{{alumnoDni}}\",\n  \"fecha_nacimiento\": \"2012-05-10\",\n  \"curso_division_turno_id\": \"{{cdtId}}\",\n  \"relationship\": \"padre\",\n  \"tutor_id\": \"{{tutorId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"alumnoId\", json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear alumno con tutor pre-registrado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alumnos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alumnos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Alumno\",\n  \"last_name\": \"PreRegistro\",\n  \"dni\": \"{{preAlumnoDni}}\",\n  \"fecha_nacimiento\": \"2012-01-01\",\n  \"curso_division_turno_id\": \"{{cdtId}}\",\n  \"relationship\": \"madre\",\n  \"tutor_first_name\": \"Tutor\",\n  \"tutor_last_name\": \"PreRegistro\",\n  \"tutor_dni\": \"{{preTutorDni}}\",\n  \"tutor_telephone\": \"3510000000\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"preAlumnoId\", json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar alumnos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alumnos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alumnos"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener alumno por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alumnos/{{alumnoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alumnos",
+                "{{alumnoId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar alumno",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alumnos/{{alumnoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alumnos",
+                "{{alumnoId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Alumno Actualizado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tutores de un alumno",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alumnos/{{alumnoId}}/tutores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alumnos",
+                "{{alumnoId}}",
+                "tutores"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 - Pre-registro y vínculo tutor-alumno",
+      "item": [
+        {
+          "name": "Buscar tutor pre-registrado por DNI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tutores/dni/{{preTutorDni}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutores",
+                "dni",
+                "{{preTutorDni}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"preTutorId\", json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear vínculo tutor-alumno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tutor-alumno",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutor-alumno"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alumno_id\": \"{{alumnoId}}\",\n  \"tutor_id\": \"{{preTutorId}}\",\n  \"relationship\": \"otra\",\n  \"otra_relacion\": \"Tutor legal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"tutorAlumnoId\", json.id);",
+                  "pm.collectionVariables.set(\"codigoInstitucional\", json.codigo_institucional);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Validar código institucional",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tutores/validarCodigo/{{codigoInstitucional}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutores",
+                "validarCodigo",
+                "{{codigoInstitucional}}"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar tutor (público)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tutores/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutores",
+                "register"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo_institucional\": \"{{codigoInstitucional}}\",\n  \"email\": \"{{registerTutorEmail}}\",\n  \"password\": \"Password123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 201\", function () { pm.response.to.have.status(201); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alumnos de un tutor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tutores/{{preTutorId}}/alumnos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutores",
+                "{{preTutorId}}",
+                "alumnos"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "07 - Materias",
+      "item": [
+        {
+          "name": "Crear materia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/materias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "materias"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"{{materiaNombre}}\",\n  \"descripcion\": \"Materia creada por la colección Postman\",\n  \"curso_division_turno_id\": \"{{cdtId}}\",\n  \"docente_id\": \"{{docenteId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"materiaId\", json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar materias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/materias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "materias"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener materia por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/materias/{{materiaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "materias",
+                "{{materiaId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar materia",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/materias/{{materiaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "materias",
+                "{{materiaId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Descripción actualizada por Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Materias de un docente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/docentes/{{docenteId}}/materias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "docentes",
+                "{{docenteId}}",
+                "materias"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Materias de un CDT",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno/{{cdtId}}/materias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "cursoDivisionTurno",
+                "{{cdtId}}",
+                "materias"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "08 - Inscripciones",
+      "item": [
+        {
+          "name": "Crear inscripción",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/inscripciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "inscripciones"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alumno_id\": \"{{alumnoId}}\",\n  \"materia_id\": \"{{materiaId}}\",\n  \"fecha_inscripcion\": \"01/03/2026\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"inscripcionId\", json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cambiar estado de inscripción a aprobado",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/inscripciones/{{inscripcionId}}/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "inscripciones",
+                "{{inscripcionId}}",
+                "estado"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"aprobado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar inscripciones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/inscripciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "inscripciones"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener inscripción por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/inscripciones/{{inscripcionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "inscripciones",
+                "{{inscripcionId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inscripciones de un alumno",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alumnos/{{alumnoId}}/inscripciones?estado=aprobado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alumnos",
+                "{{alumnoId}}",
+                "inscripciones"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "aprobado"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inscripciones de una materia",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/materias/{{materiaId}}/inscripciones?estado=aprobado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "materias",
+                "{{materiaId}}",
+                "inscripciones"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "aprobado"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "09 - Administradores",
+      "item": [
+        {
+          "name": "Crear admin (protegido)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admins",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admins"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Admin\",\n  \"last_name\": \"Secundario\",\n  \"username\": \"{{secondAdminUsername}}\",\n  \"password\": \"Password123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"secondAdminId\", json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar admins",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admins",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admins"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener admin por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admins/{{secondAdminId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admins",
+                "{{secondAdminId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar admin",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admins/{{secondAdminId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admins",
+                "{{secondAdminId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Admin Actualizado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estadísticas de admins",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admins/estadisticas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admins",
+                "estadisticas"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "10 - Usuarios (base)",
       "item": [
         {
           "name": "Crear usuario",
@@ -94,53 +1898,102 @@
                 "value": "application/json"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Pérez\",\n    \"dni\": 12345678,\n    \"username\": \"juanperez\",\n    \"password\": \"12345678\",\n    \"role\": \"alumno\"\n}"
-            },
             "url": {
               "raw": "{{baseUrl}}/api/v1/users",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
             },
-            "description": "Registra un nuevo usuario. Público."
-          }
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Usuario\",\n  \"last_name\": \"Postman\",\n  \"dni\": \"{{userDni}}\",\n  \"username\": \"{{userUsername}}\",\n  \"password\": \"Password123!\",\n  \"role\": \"alumno\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 201\", function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set(\"userId\", json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Listar usuarios",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/users",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users"]
-            },
-            "description": "Lista todos los usuarios. Rol: administrador."
-          }
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Obtener usuario por ID",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/users/{{userId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "{{userId}}"]
-            },
-            "description": "Obtiene un usuario por ID. Rol: administrador."
-          }
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{userId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Actualizar usuario",
@@ -148,1171 +2001,376 @@
             "method": "PUT",
             "header": [
               {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"first_name\": \"Juan Carlos\",\n    \"last_name\": \"Pérez Gómez\",\n    \"dni\": 12345678,\n    \"username\": \"juancperez\"\n}"
-            },
             "url": {
               "raw": "{{baseUrl}}/api/v1/users/{{userId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "{{userId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{userId}}"
+              ]
             },
-            "description": "Actualiza un usuario. Rol: administrador."
-          }
-        },
-        {
-          "name": "Inhabilitar usuario",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Usuario Actualizado\",\n  \"last_name\": \"Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
               }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/users/{{userId}}/inhabilitar",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "{{userId}}", "inhabilitar"]
-            },
-            "description": "Inhabilita (soft delete) un usuario. Rol: administrador."
-          }
-        },
-        {
-          "name": "Perfil del usuario autenticado (me)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
               }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "me"]
-            },
-            "description": "Obtiene los datos del usuario autenticado. Todos los roles autenticados."
-          }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "Alumnos",
+      "name": "11 - Bajas",
+      "description": "Acciones destructivas al final para no romper las requests anteriores.",
       "item": [
         {
-          "name": "Crear alumno",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"first_name\": \"María\",\n    \"last_name\": \"González\",\n    \"dni\": 87654321,\n    \"fecha_nacimiento\": \"2005-03-15\",\n    \"curso_division_turno_id\": 1\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/alumnos",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "alumnos"]
-            },
-            "description": "Crea un alumno. Roles: administrador, docente."
-          }
-        },
-        {
-          "name": "Listar alumnos",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/alumnos",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "alumnos"]
-            },
-            "description": "Lista todos los alumnos. Roles: administrador, docente."
-          }
-        },
-        {
-          "name": "Obtener alumno por ID",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/alumnos/{{alumnoId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "alumnos", "{{alumnoId}}"]
-            },
-            "description": "Obtiene un alumno por ID. Roles: administrador, docente, tutor, alumno."
-          }
-        },
-        {
-          "name": "Actualizar alumno",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"first_name\": \"María Elena\",\n    \"fecha_nacimiento\": \"2005-03-15\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/alumnos/{{alumnoId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "alumnos", "{{alumnoId}}"]
-            },
-            "description": "Actualiza un alumno (campos opcionales). Roles: administrador, docente."
-          }
-        },
-        {
-          "name": "Inhabilitar alumno",
+          "name": "Inhabilitar vínculo tutor-alumno",
           "request": {
             "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/alumnos/{{alumnoId}}/inhabilitar",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "alumnos", "{{alumnoId}}", "inhabilitar"]
-            },
-            "description": "Inhabilita (soft delete) un alumno. Roles: administrador, docente."
-          }
-        }
-      ]
-    },
-    {
-      "name": "Docentes",
-      "item": [
-        {
-          "name": "Crear docente",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"first_name\": \"Carlos\",\n    \"last_name\": \"Rodríguez\",\n    \"dni\": 11223344,\n    \"telephone\": \"3512345678\",\n    \"fecha_ingreso\": \"2020-03-01\",\n    \"curso_division_turno_id\": 1\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/docentes",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "docentes"]
-            },
-            "description": "Crea un docente. Rol: administrador."
-          }
-        },
-        {
-          "name": "Listar docentes",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/docentes",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "docentes"]
-            },
-            "description": "Lista todos los docentes. Rol: administrador."
-          }
-        },
-        {
-          "name": "Obtener docente por ID",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/docentes/{{docenteId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "docentes", "{{docenteId}}"]
-            },
-            "description": "Obtiene un docente por ID. Rol: administrador."
-          }
-        },
-        {
-          "name": "Actualizar docente",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"telephone\": \"3519876543\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/docentes/{{docenteId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "docentes", "{{docenteId}}"]
-            },
-            "description": "Actualiza un docente. Rol: administrador."
-          }
-        },
-        {
-          "name": "Inhabilitar docente",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/docentes/{{docenteId}}/inhabilitar",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "docentes", "{{docenteId}}", "inhabilitar"]
-            },
-            "description": "Inhabilita (soft delete) un docente. Rol: administrador."
-          }
-        },
-        {
-          "name": "Materias de un docente",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/docentes/{{docenteId}}/materias",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "docentes", "{{docenteId}}", "materias"]
-            },
-            "description": "Lista las materias de un docente. Roles: administrador, docente."
-          }
-        }
-      ]
-    },
-    {
-      "name": "Tutores",
-      "item": [
-        {
-          "name": "Registrar tutor (público)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"first_name\": \"Ana\",\n    \"last_name\": \"López\",\n    \"dni\": 22334455,\n    \"telephone\": \"3511112222\",\n    \"email\": \"ana@mail.com\",\n    \"password\": \"12345678\",\n    \"codigo_institucional\": \"COD-123456\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/tutores/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "tutores", "register"]
-            },
-            "description": "Registro público de tutor. Requiere código institucional válido."
-          }
-        },
-        {
-          "name": "Validar código de tutor",
-          "request": {
-            "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/tutores/validarCodigo/{codigo}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "tutores", "validarCodigo", "{codigo}"]
-            },
-            "description": "Valida un código institucional de pre-registro de tutor. Público."
-          }
-        },
-        {
-          "name": "Crear tutor (admin)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
+              "raw": "{{baseUrl}}/api/v1/tutor-alumno/{{tutorAlumnoId}}/inhabilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutor-alumno",
+                "{{tutorAlumnoId}}",
+                "inhabilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
               }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"first_name\": \"Luis\",\n    \"last_name\": \"Martínez\",\n    \"dni\": 33445566,\n    \"telephone\": \"3513334444\",\n    \"email\": \"luis@mail.com\",\n    \"password\": \"12345678\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/tutores",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "tutores"]
-            },
-            "description": "Crea un tutor directamente (sin pre-registro). Rol: administrador."
-          }
-        },
-        {
-          "name": "Listar tutores",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/tutores",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "tutores"]
-            },
-            "description": "Lista todos los tutores. Rol: administrador."
-          }
-        },
-        {
-          "name": "Obtener tutor por ID",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/tutores/{{tutorId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "tutores", "{{tutorId}}"]
-            },
-            "description": "Obtiene un tutor por ID. Roles: administrador, tutor."
-          }
-        },
-        {
-          "name": "Buscar tutor por DNI",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/tutores/dni/{{dni}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "tutores", "dni", "{{dni}}"]
-            },
-            "description": "Busca un tutor por DNI. Roles: administrador, tutor."
-          }
-        },
-        {
-          "name": "Alumnos de un tutor",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/tutores/{{tutorId}}/alumnos",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "tutores", "{{tutorId}}", "alumnos"]
-            },
-            "description": "Lista los alumnos a cargo de un tutor. Roles: administrador, tutor."
-          }
-        },
-        {
-          "name": "Actualizar tutor",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"telephone\": \"3515556666\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/tutores/{{tutorId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "tutores", "{{tutorId}}"]
-            },
-            "description": "Actualiza un tutor. Rol: administrador."
-          }
-        },
-        {
-          "name": "Inhabilitar tutor",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/tutores/{{tutorId}}/inhabilitar",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "tutores", "{{tutorId}}", "inhabilitar"]
-            },
-            "description": "Inhabilita (soft delete) un tutor. Rol: administrador."
-          }
-        }
-      ]
-    },
-    {
-      "name": "Administradores",
-      "item": [
-        {
-          "name": "Registrar admin (público)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"first_name\": \"Admin\",\n    \"last_name\": \"Sistema\",\n    \"dni\": 99999999,\n    \"username\": \"admin\",\n    \"password\": \"12345678\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admins/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admins", "register"]
-            },
-            "description": "Registro público de administrador."
-          }
-        },
-        {
-          "name": "Crear admin",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"first_name\": \"Admin2\",\n    \"last_name\": \"Sistema\",\n    \"dni\": 88888888,\n    \"username\": \"admin2\",\n    \"password\": \"12345678\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admins",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admins"]
-            },
-            "description": "Crea un administrador. Rol: administrador."
-          }
-        },
-        {
-          "name": "Listar admins",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admins",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admins"]
-            },
-            "description": "Lista todos los administradores. Rol: administrador."
-          }
-        },
-        {
-          "name": "Obtener admin por ID",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admins/{{adminId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admins", "{{adminId}}"]
-            },
-            "description": "Obtiene un administrador por ID. Rol: administrador."
-          }
-        },
-        {
-          "name": "Actualizar admin",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"first_name\": \"Admin Actualizado\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admins/{{adminId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admins", "{{adminId}}"]
-            },
-            "description": "Actualiza un administrador. Rol: administrador."
-          }
-        },
-        {
-          "name": "Inhabilitar admin",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admins/{{adminId}}/inhabilitar",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admins", "{{adminId}}", "inhabilitar"]
-            },
-            "description": "Inhabilita (soft delete) un administrador. Rol: administrador."
-          }
-        },
-        {
-          "name": "Estadísticas de admins",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admins/estadisticas",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admins", "estadisticas"]
-            },
-            "description": "Obtiene estadísticas (total alumnos, total tutores). Rol: administrador."
-          }
-        }
-      ]
-    },
-    {
-      "name": "Curso División Turno",
-      "item": [
-        {
-          "name": "Crear CDT",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"curso\": \"5to\",\n    \"division\": \"A\",\n    \"turno\": \"Mañana\",\n    \"capacidad_maxima\": 30\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "cursoDivisionTurno"]
-            },
-            "description": "Crea un curso/división/turno. Rol: administrador."
-          }
-        },
-        {
-          "name": "Listar CDT",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "cursoDivisionTurno"]
-            },
-            "description": "Lista todos los CDT. Rol: administrador."
-          }
-        },
-        {
-          "name": "Obtener CDT por ID",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno/{{cdtId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "cursoDivisionTurno", "{{cdtId}}"]
-            },
-            "description": "Obtiene un CDT por ID. Rol: administrador."
-          }
-        },
-        {
-          "name": "Actualizar CDT",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"capacidad_maxima\": 35\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno/{{cdtId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "cursoDivisionTurno", "{{cdtId}}"]
-            },
-            "description": "Actualiza un CDT. Rol: administrador."
-          }
-        },
-        {
-          "name": "Inhabilitar CDT",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno/{{cdtId}}/inhabilitar",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "cursoDivisionTurno", "{{cdtId}}", "inhabilitar"]
-            },
-            "description": "Inhabilita (soft delete) un curso/división/turno. Rol: administrador."
-          }
-        },
-        {
-          "name": "Materias de un CDT",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno/{{cdtId}}/materias",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "cursoDivisionTurno", "{{cdtId}}", "materias"]
-            },
-            "description": "Lista las materias de un CDT. Roles: administrador, docente."
-          }
-        }
-      ]
-    },
-    {
-      "name": "Materias",
-      "item": [
-        {
-          "name": "Crear materia",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"nombre\": \"Matemática\",\n    \"descripcion\": \"Álgebra y geometría\",\n    \"curso_division_turno_id\": 1,\n    \"docente_id\": \"{{docenteId}}\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/materias",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "materias"]
-            },
-            "description": "Crea una materia. Rol: administrador."
-          }
-        },
-        {
-          "name": "Listar materias",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/materias",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "materias"]
-            },
-            "description": "Lista todas las materias. Rol: administrador."
-          }
-        },
-        {
-          "name": "Obtener materia por ID",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/materias/{{materiaId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "materias", "{{materiaId}}"]
-            },
-            "description": "Obtiene una materia por ID. Rol: administrador."
-          }
-        },
-        {
-          "name": "Actualizar materia",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"descripcion\": \"Álgebra, geometría y trigonometría\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/materias/{{materiaId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "materias", "{{materiaId}}"]
-            },
-            "description": "Actualiza una materia. Rol: administrador."
-          }
+            }
+          ]
         },
         {
           "name": "Inhabilitar materia",
           "request": {
             "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/materias/{{materiaId}}/inhabilitar",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "materias", "{{materiaId}}", "inhabilitar"]
-            },
-            "description": "Inhabilita (soft delete) una materia. Rol: administrador."
-          }
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "materias",
+                "{{materiaId}}",
+                "inhabilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inhabilitar alumno",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alumnos/{{alumnoId}}/inhabilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alumnos",
+                "{{alumnoId}}",
+                "inhabilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inhabilitar docente",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/docentes/{{docenteId}}/inhabilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "docentes",
+                "{{docenteId}}",
+                "inhabilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inhabilitar tutor",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tutores/{{tutorId}}/inhabilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutores",
+                "{{tutorId}}",
+                "inhabilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inhabilitar CDT",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno/{{cdtId}}/inhabilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "cursoDivisionTurno",
+                "{{cdtId}}",
+                "inhabilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inhabilitar admin secundario",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admins/{{secondAdminId}}/inhabilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admins",
+                "{{secondAdminId}}",
+                "inhabilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inhabilitar usuario base",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{userId}}/inhabilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{userId}}",
+                "inhabilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "Inscripciones",
+      "name": "12 - Cierre",
       "item": [
         {
-          "name": "Crear inscripción",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"alumno_id\": \"{{alumnoId}}\",\n    \"materia_id\": {{materiaId}}\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/inscripciones",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "inscripciones"]
-            },
-            "description": "Inscribe a un alumno en una materia. Roles: administrador, alumno."
-          }
-        },
-        {
-          "name": "Listar inscripciones",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/inscripciones",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "inscripciones"]
-            },
-            "description": "Lista todas las inscripciones. Roles: administrador, alumno."
-          }
-        },
-        {
-          "name": "Obtener inscripción por ID",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/inscripciones/{{inscripcionId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "inscripciones", "{{inscripcionId}}"]
-            },
-            "description": "Obtiene una inscripción por ID. Roles: administrador, alumno."
-          }
-        },
-        {
-          "name": "Inscripciones de un alumno",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/alumnos/{{alumnoId}}/inscripciones?estado=pendiente",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "alumnos", "{{alumnoId}}", "inscripciones"],
-              "query": [
-                {
-                  "key": "estado",
-                  "value": "pendiente",
-                  "description": "Filtro opcional: pendiente, aprobado, rechazado"
-                }
-              ]
-            },
-            "description": "Lista las inscripciones de un alumno. Roles: administrador, alumno."
-          }
-        },
-        {
-          "name": "Inscripciones de una materia",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/materias/{{materiaId}}/inscripciones?estado=aprobado",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "materias", "{{materiaId}}", "inscripciones"],
-              "query": [
-                {
-                  "key": "estado",
-                  "value": "aprobado",
-                  "description": "Filtro opcional: pendiente, aprobado, rechazado"
-                }
-              ]
-            },
-            "description": "Lista las inscripciones de una materia. Roles: administrador, docente."
-          }
-        },
-        {
-          "name": "Cambiar estado de inscripción",
+          "name": "Cambiar contraseña",
           "request": {
             "method": "PUT",
             "header": [
               {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "password"
+              ]
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"estado\": \"aprobado\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/inscripciones/{{inscripcionId}}/estado",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "inscripciones", "{{inscripcionId}}", "estado"]
-            },
-            "description": "Cambia el estado de una inscripción (pendiente/aprobado/rechazado). Roles: administrador, docente."
-          }
+              "raw": "{\n  \"password\": \"NuevaPassword123!\",\n  \"password_confirmation\": \"NuevaPassword123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
-          "name": "Eliminar inscripción (no permitido)",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/inscripciones/{{inscripcionId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "inscripciones", "{{inscripcionId}}"]
-            },
-            "description": "No se permite eliminar inscripciones. Usar Cambiar estado de inscripción con estado=rechazado. Rol: administrador."
-          }
-        }
-      ]
-    },
-    {
-      "name": "Vínculos Tutor-Alumno",
-      "item": [
-        {
-          "name": "Crear vínculo tutor-alumno",
+          "name": "Logout",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"alumno_id\": \"{{alumnoId}}\",\n    \"tutor_id\": \"{{tutorId}}\",\n    \"relationship\": \"madre\",\n    \"otra_relacion\": null\n}"
-            },
+            "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/tutor-alumno",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "tutor-alumno"]
-            },
-            "description": "Asigna un tutor a un alumno. Rol: administrador."
-          }
-        },
-        {
-          "name": "Inhabilitar vínculo tutor-alumno",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
+              "raw": "{{baseUrl}}/api/v1/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "logout"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
               }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/tutor-alumno/{{tutorAlumnoId}}/inhabilitar",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "tutor-alumno", "{{tutorAlumnoId}}", "inhabilitar"]
-            },
-            "description": "Inhabilita (soft delete) un vínculo tutor-alumno. Rol: administrador."
-          }
-        },
-        {
-          "name": "Tutores de un alumno",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/alumnos/{{alumnoId}}/tutores",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "alumnos", "{{alumnoId}}", "tutores"]
-            },
-            "description": "Lista los tutores de un alumno. Roles: administrador, tutor, alumno."
-          }
+            }
+          ]
         }
       ]
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://127.0.0.1:8000",
-      "description": "URL base de la API (ej: http://127.0.0.1:8000)"
-    },
-    {
-      "key": "token",
-      "value": "",
-      "description": "Token de autenticación Sanctum (obtener con POST /login)"
-    },
-    {
-      "key": "userId",
-      "value": "",
-      "description": "ID de usuario (UUID)"
-    },
-    {
-      "key": "alumnoId",
-      "value": "",
-      "description": "ID de alumno (UUID)"
-    },
-    {
-      "key": "docenteId",
-      "value": "",
-      "description": "ID de docente (UUID)"
-    },
-    {
-      "key": "tutorId",
-      "value": "",
-      "description": "ID de tutor (UUID)"
-    },
-    {
-      "key": "adminId",
-      "value": "",
-      "description": "ID de administrador (UUID)"
-    },
-    {
-      "key": "cdtId",
-      "value": "",
-      "description": "ID de curso/división/turno"
-    },
-    {
-      "key": "materiaId",
-      "value": "",
-      "description": "ID de materia"
-    },
-    {
-      "key": "inscripcionId",
-      "value": "",
-      "description": "ID de inscripción"
-    },
-    {
-      "key": "tutorAlumnoId",
-      "value": "",
-      "description": "ID de vínculo tutor-alumno (UUID)"
-    },
-    {
-      "key": "dni",
-      "value": "",
-      "description": "DNI de tutor"
-    },
-    {
-      "key": "codigo",
-      "value": "",
-      "description": "Código institucional de tutor"
     }
   ]
 }

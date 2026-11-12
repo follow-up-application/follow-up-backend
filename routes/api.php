@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
 
     // Públicas
-    Route::post('login', [AuthController::class, 'login']);
+    Route::post('login', [AuthController::class, 'login'])->name('login');
     Route::post('users', [UserController::class, 'store']);
     Route::get('tutores/validarCodigo/{codigo}', [TutorController::class, 'validateCode']);
     Route::post('tutores/register', [TutorController::class, 'register']);
@@ -113,16 +113,17 @@ Route::prefix('v1')->group(function () {
             Route::patch('admins/{id}/inhabilitar', [AdminController::class, 'inhabilitar']);
         });
 
-        // ── Usuarios (CRUD base) ──
-        Route::middleware('role:administrador')->group(function () {
-            Route::get('users/{id}', [UserController::class, 'show']);
-            Route::put('users/{id}', [UserController::class, 'update']);
-            Route::patch('users/{id}/inhabilitar', [UserController::class, 'inhabilitar']);
-        });
-
         // Perfil del usuario autenticado
         Route::middleware('role:administrador,docente,tutor,alumno')->group(function () {
             Route::get('users/me', [UserController::class, 'me']);
+        });
+
+        // ── Usuarios (CRUD base) ──
+        Route::middleware('role:administrador')->group(function () {
+            Route::get('users', [UserController::class, 'index']);
+            Route::get('users/{id}', [UserController::class, 'show']);
+            Route::put('users/{id}', [UserController::class, 'update']);
+            Route::patch('users/{id}/inhabilitar', [UserController::class, 'inhabilitar']);
         });
 
         // ── Vínculos Tutor-Alumno ──

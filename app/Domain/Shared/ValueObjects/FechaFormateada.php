@@ -2,8 +2,8 @@
 
 namespace App\Domain\Shared\ValueObjects;
 
-use InvalidArgumentException;
 use DateTimeImmutable;
+use InvalidArgumentException;
 
 class FechaFormateada
 {
@@ -11,14 +11,29 @@ class FechaFormateada
 
     public function __construct(string $fecha)
     {
-        // Acepta dd/mm/yyyy
-        $parsed = DateTimeImmutable::createFromFormat('d/m/Y', $fecha);
+        // Acepta dd/mm/yyyy (frontend) y yyyy-mm-dd (API/Postman).
+        $parsed = $this->parse('!d/m/Y', $fecha)
+            ?? $this->parse('!Y-m-d', $fecha);
 
-        if (!$parsed) {
-            throw new InvalidArgumentException("Fecha inválida: {$fecha}. Formato esperado: dd/mm/yyyy");
+        if (! $parsed) {
+            throw new InvalidArgumentException(
+                "Fecha inválida: {$fecha}. Formatos esperados: dd/mm/yyyy o yyyy-mm-dd"
+            );
         }
 
         $this->fecha = $parsed;
+    }
+
+    private function parse(string $format, string $fecha): ?DateTimeImmutable
+    {
+        $parsed = DateTimeImmutable::createFromFormat($format, $fecha);
+        $errors = DateTimeImmutable::getLastErrors();
+
+        if ($parsed === false || ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0))) {
+            return null;
+        }
+
+        return $parsed;
     }
 
     // Para guardar en la DB
@@ -50,7 +65,8 @@ class FechaFormateada
         $instance = new self('01/01/2000'); // instancia temporal
 
         if ($fecha instanceof \DateTimeInterface) {
-            $instance->fecha = \DateTimeImmutable::createFromInterface($fecha);
+            $instance->fecha = DateTimeImmutable::createFromInterface($fecha);
+
             return $instance;
         }
 
@@ -58,11 +74,12 @@ class FechaFormateada
         $parsed = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $fecha)
             ?: DateTimeImmutable::createFromFormat('Y-m-d', $fecha);
 
-        if (!$parsed) {
+        if (! $parsed) {
             throw new InvalidArgumentException("Fecha inválida desde DB: {$fecha}");
         }
 
         $instance->fecha = $parsed;
+
         return $instance;
     }
 

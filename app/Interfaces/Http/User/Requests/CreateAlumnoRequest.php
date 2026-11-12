@@ -2,9 +2,11 @@
 
 namespace App\Interfaces\Http\User\Requests;
 
+use App\Domain\User\ValueObjects\TutorAlumnoRelation;
+use App\Infrastructure\User\Persistence\UserModel;
+use App\Interfaces\Http\User\Requests\Rules\FechaValida;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Domain\User\ValueObjects\TutorAlumnoRelation;
 
 class CreateAlumnoRequest extends FormRequest
 {
@@ -19,8 +21,8 @@ class CreateAlumnoRequest extends FormRequest
             // Datos del alumno
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
-            'dni' => ['required', 'integer', 'digits_between:7,8'],
-            'fecha_nacimiento' => ['required', 'string', 'max:12'],
+            'dni' => ['required', 'integer', 'digits_between:7,8', 'unique:users,dni'],
+            'fecha_nacimiento' => ['required', 'string', 'max:12', new FechaValida],
             'curso_division_turno_id' => ['required', 'integer', 'exists:curso_division_turno,id'],
 
             // Relación con el tutor. El enum del dominio usa minúsculas
@@ -30,12 +32,47 @@ class CreateAlumnoRequest extends FormRequest
             'otra_relacion' => ['nullable', 'string', 'max:100', 'required_if:relationship,otra'],
 
             // Tutor
-            'tutor_id' => ['nullable', 'uuid'],
-            'tutor_first_name' => ['nullable', 'string', 'max:100', 'required_if:tutor_id,null'],
-            'tutor_last_name' => ['nullable', 'string', 'max:100', 'required_if:tutor_id,null'],
-            'tutor_dni' => ['required', 'integer', 'digits_between:7,8'],
-            'tutor_telephone' => ['nullable', 'string', 'max:20', 'required_if:tutor_id,null'],
+            'tutor_id' => ['nullable', 'uuid', 'exists:tutores,id'],
+            'tutor_first_name' => [
+                'nullable',
+                'string',
+                'max:100',
+                Rule::requiredIf(fn () => ! $this->tutorIdInformado() && ! $this->tutorExistePorDni()),
+            ],
+            'tutor_last_name' => [
+                'nullable',
+                'string',
+                'max:100',
+                Rule::requiredIf(fn () => ! $this->tutorIdInformado() && ! $this->tutorExistePorDni()),
+            ],
+            'tutor_dni' => [
+                'nullable',
+                'integer',
+                'digits_between:7,8',
+                Rule::requiredIf(fn () => ! $this->tutorIdInformado()),
+            ],
+            'tutor_telephone' => [
+                'nullable',
+                'string',
+                'max:20',
+                Rule::requiredIf(fn () => ! $this->tutorIdInformado() && ! $this->tutorExistePorDni()),
+            ],
         ];
+    }
+
+    private function tutorIdInformado(): bool
+    {
+        return filled($this->input('tutor_id'));
+    }
+
+    private function tutorExistePorDni(): bool
+    {
+        $dni = $this->input('tutor_dni');
+
+        return filled($dni)
+            && UserModel::where('dni', (int) $dni)
+                ->where('role', 'tutor')
+                ->exists();
     }
 
     public function messages(): array

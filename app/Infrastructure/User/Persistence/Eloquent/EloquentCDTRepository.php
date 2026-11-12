@@ -39,9 +39,9 @@ class EloquentCDTRepository implements CursoDivisionTurnoRepositoryInterface
 
     public function findByName(string $name): ?CursoDivisionTurno
     {
-        $cdtModel = CursoDivisionTurnoModel::where('anio', $name)->first();
-
-        return $cdtModel ? $this->toDomain($cdtModel) : null;
+        return CursoDivisionTurnoModel::all()
+            ->map(fn (CursoDivisionTurnoModel $model) => $this->toDomain($model))
+            ->first(fn (CursoDivisionTurno $cdt) => $cdt->value() === $name);
     }
 
     public function all(): array
@@ -66,15 +66,16 @@ class EloquentCDTRepository implements CursoDivisionTurnoRepositoryInterface
             id: $cdtModel->id,
             curso: $cdtModel->curso,
             division: $cdtModel->division,
-            turno: TurnoEscolar::from($cdtModel->turno)
+            turno: TurnoEscolar::from($cdtModel->turno),
+            capacidad_maxima: $cdtModel->capacidad_maxima,
         );
     }
 
     public function findByAttributes(int $curso, string $division, string $turno): ?CursoDivisionTurno
     {
         $cdtModel = CursoDivisionTurnoModel::where('curso', $curso)
-            ->where('division', ctype_upper($division))
-            ->where('turno', ctype_upper($turno))
+            ->where('division', strtoupper($division))
+            ->where('turno', $turno)
             ->first();
 
         return $cdtModel ? $this->toDomain($cdtModel) : null;

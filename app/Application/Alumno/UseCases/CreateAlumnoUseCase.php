@@ -10,14 +10,14 @@ use App\Domain\User\Entities\Tutor;
 use App\Domain\User\Entities\TutorAlumno;
 use App\Domain\User\Exceptions\CDTNoEncontradoException;
 use App\Domain\User\Exceptions\TutorNoEncontradoException;
-use App\Domain\User\ValueObjects\UserId;
-use App\Domain\User\ValueObjects\UserName;
 use App\Domain\User\Repositories\AlumnoRepositoryInterface;
 use App\Domain\User\Repositories\CursoDivisionTurnoRepositoryInterface;
 use App\Domain\User\Repositories\TutorAlumnoRepositoryInterface;
 use App\Domain\User\Repositories\TutorRepositoryInterface;
 use App\Domain\User\ValueObjects\CodigoInstitucional;
 use App\Domain\User\ValueObjects\TutorAlumnoRelation;
+use App\Domain\User\ValueObjects\UserId;
+use App\Domain\User\ValueObjects\UserName;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -39,12 +39,10 @@ class CreateAlumnoUseCase
                 throw new CDTNoEncontradoException($dto->cursoDivisionTurnoId);
             }
 
-            $tutor = $dto->tutorFirstName === null
-                ? $this->tutorRepository->findByDni($dto->tutorDni)
-                : $this->crearNuevoTutor($dto);
+            $tutor = $this->resolverTutor($dto);
 
-            if ($dto->tutorDni !== null && $tutor === null) {
-                throw new TutorNoEncontradoException('Tutor no encontrado' . $dto->tutorDni);
+            if ($tutor === null) {
+                throw new TutorNoEncontradoException;
             }
 
             $alumno = $this->buildAlumno($dto, $cdt);
@@ -56,7 +54,7 @@ class CreateAlumnoUseCase
                 tutor_id: $tutor->id(),
                 relationship: TutorAlumnoRelation::from($dto->relationship),
                 otra_relacion: $dto->otraRelacion,
-                codigo_institucional: new CodigoInstitucional(),
+                codigo_institucional: new CodigoInstitucional,
             ));
 
             return $alumno;
@@ -79,13 +77,34 @@ class CreateAlumnoUseCase
         );
     }
 
+    private function resolverTutor(DTOsCreateAlumnoDTO $dto): ?Tutor
+    {
+        if ($dto->tutorId !== null) {
+            return $this->tutorRepository->findById(new UserId($dto->tutorId));
+        }
+
+        if ($dto->tutorDni !== null) {
+            $existente = $this->tutorRepository->findByDni($dto->tutorDni);
+
+            if ($existente !== null) {
+                return $existente;
+            }
+        }
+
+        if ($dto->tutorFirstName !== null) {
+            return $this->crearNuevoTutor($dto);
+        }
+
+        return null;
+    }
+
     private function crearNuevoTutor(DTOsCreateAlumnoDTO $dto): Tutor
     {
         $tutor = new Tutor(
             id: UserId::generate(),
             first_name: $dto->tutorFirstName,
             last_name: $dto->tutorLastName,
-            dni: $dto->tutorDni,
+            dni: (int) $dto->tutorDni,
             telephone: $dto->tutorTelephone,
             email: null,
         );
