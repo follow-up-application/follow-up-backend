@@ -51,6 +51,19 @@ class EloquentUserRepository implements UserRepositoryInterface
         }
     }
 
+    public function habilitar(UserId $id): bool
+    {
+        $model = UserModel::withTrashed()->find($id->value());
+
+        if ($model === null) {
+            return false;
+        }
+
+        $model->restore();
+
+        return true;
+    }
+
     public function all(): array
     {
         return UserModel::all()

@@ -92,6 +92,21 @@ class EloquentAlumnoRepository implements AlumnoRepositoryInterface
         }
     }
 
+    public function habilitar(UserId $id): bool
+    {
+        $alumnoModel = AlumnoModel::withTrashed()->find($id->value());
+        $userModel = UserModel::withTrashed()->find($id->value());
+
+        if ($alumnoModel === null && $userModel === null) {
+            return false;
+        }
+
+        $alumnoModel?->restore();
+        $userModel?->restore();
+
+        return true;
+    }
+
     public function totalAlumnos(): int
     {
         return AlumnoModel::count();

@@ -70,6 +70,20 @@ test('el administrador inhabilita un vinculo tutor alumno', function () {
     expect(TutorAlumnoModel::withTrashed()->find($vinculo->id)->trashed())->toBeTrue();
 });
 
+test('el administrador habilita un vinculo tutor alumno inhabilitado', function () {
+    autenticarComo(usuarioFixture('administrador'));
+    $alumno = crearAlumno();
+    $tutor = crearTutor();
+    $vinculo = crearVinculoTutorAlumno($alumno['alumno'], $tutor['tutor']);
+
+    $this->patchJson('/api/v1/tutor-alumno/'.$vinculo->id.'/inhabilitar')
+        ->assertStatus(204);
+    $this->patchJson('/api/v1/tutor-alumno/'.$vinculo->id.'/habilitar')
+        ->assertStatus(204);
+
+    expect(TutorAlumnoModel::withTrashed()->find($vinculo->id)->deleted_at)->toBeNull();
+});
+
 test('inhabilitar un vinculo inexistente devuelve 404', function () {
     autenticarComo(usuarioFixture('administrador'));
 

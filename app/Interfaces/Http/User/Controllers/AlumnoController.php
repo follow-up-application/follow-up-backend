@@ -75,4 +75,13 @@ class AlumnoController extends Controller
 
         return response()->json('Alumno inhabilitado', 204);
     }
+
+    public function habilitar(string $id): JsonResponse
+    {
+        if (! $this->alumnoRepository->habilitar(new UserId($id))) {
+            return response()->json(['message' => 'Alumno no encontrado'], 404);
+        }
+
+        return response()->json('Alumno habilitado', 204);
+    }
 }

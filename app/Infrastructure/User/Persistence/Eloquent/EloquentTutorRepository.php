@@ -102,6 +102,21 @@ class EloquentTutorRepository implements TutorRepositoryInterface
         }
     }
 
+    public function habilitar(UserId $id): bool
+    {
+        $tutorModel = TutorModel::withTrashed()->find($id->value());
+        $userModel = UserModel::withTrashed()->find($id->value());
+
+        if ($tutorModel === null && $userModel === null) {
+            return false;
+        }
+
+        $tutorModel?->restore();
+        $userModel?->restore();
+
+        return true;
+    }
+
     public function totalTutores(): int
     {
         return TutorModel::count();

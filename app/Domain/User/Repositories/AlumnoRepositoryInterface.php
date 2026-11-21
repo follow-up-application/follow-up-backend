@@ -12,5 +12,6 @@ interface AlumnoRepositoryInterface
     public function findByUsername(string $username): ?Alumno;
     public function all(): array;
     public function inhabilitar(UserId $id): void;
+    public function habilitar(UserId $id): bool;
     public function totalAlumnos(): int;
 }

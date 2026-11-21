@@ -50,6 +50,15 @@ class TutorAlumnoController extends Controller
         return response()->json('Vínculo inhabilitado', 204);
     }
 
+    public function habilitar(string $id): JsonResponse
+    {
+        if (! $this->tutorAlumnoRepository->habilitar(new UserId($id))) {
+            return response()->json(['message' => 'Vínculo tutor-alumno no encontrado'], 404);
+        }
+
+        return response()->json('Vínculo habilitado', 204);
+    }
+
     public function byAlumno(string $id): JsonResponse
     {
         $alumno = $this->alumnoRepository->findById(new UserId($id));

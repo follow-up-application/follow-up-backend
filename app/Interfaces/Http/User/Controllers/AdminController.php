@@ -80,6 +80,15 @@ class AdminController extends Controller
         return response()->json('Admin inhabilitado', 204);
     }
 
+    public function habilitar(string $id): JsonResponse
+    {
+        if (! $this->adminRepository->habilitar(new UserId($id))) {
+            return response()->json(['message' => 'Admin no encontrado'], 404);
+        }
+
+        return response()->json('Admin habilitado', 204);
+    }
+
     public function statistics(): JsonResponse
     {
         $totalAlumnos = $this->alumnoRepository->totalAlumnos();

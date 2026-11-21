@@ -74,4 +74,13 @@ class CursoDivisionTurnoController extends Controller
 
         return response()->json('Curso Division Turno inhabilitado', 204);
     }
+
+    public function habilitar(string $id): JsonResponse
+    {
+        if (! $this->cursoDivisionTurnoRepository->habilitar(intval($id))) {
+            return response()->json(['message' => 'Curso Division Turno no encontrado'], 404);
+        }
+
+        return response()->json('Curso Division Turno habilitado', 204);
+    }
 }

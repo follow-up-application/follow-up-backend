@@ -127,6 +127,18 @@ test('el administrador inhabilita un curso division turno', function () {
     expect(CursoDivisionTurnoModel::withTrashed()->find($cdt->id)->trashed())->toBeTrue();
 });
 
+test('el administrador habilita un curso division turno inhabilitado', function () {
+    autenticarComo(usuarioFixture('administrador'));
+    $cdt = crearCDT();
+
+    $this->patchJson('/api/v1/cursoDivisionTurno/'.$cdt->id.'/inhabilitar')
+        ->assertStatus(204);
+    $this->patchJson('/api/v1/cursoDivisionTurno/'.$cdt->id.'/habilitar')
+        ->assertStatus(204);
+
+    expect(CursoDivisionTurnoModel::withTrashed()->find($cdt->id)->deleted_at)->toBeNull();
+});
+
 test('inhabilitar un curso division turno inexistente devuelve 404', function () {
     autenticarComo(usuarioFixture('administrador'));
 

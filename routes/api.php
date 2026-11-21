@@ -35,6 +35,7 @@ Route::prefix('v1')->group(function () {
         Route::middleware('role:administrador,docente')->group(function () {
             Route::apiResource('alumnos', AlumnoController::class)->except(['show', 'destroy']);
             Route::patch('alumnos/{id}/inhabilitar', [AlumnoController::class, 'inhabilitar']);
+            Route::patch('alumnos/{id}/habilitar', [AlumnoController::class, 'habilitar']);
         });
 
         // ── Curso Division Turno ──
@@ -42,6 +43,7 @@ Route::prefix('v1')->group(function () {
         Route::middleware('role:administrador')->group(function () {
             Route::apiResource('cursoDivisionTurno', CursoDivisionTurnoController::class)->except(['destroy']);
             Route::patch('cursoDivisionTurno/{id}/inhabilitar', [CursoDivisionTurnoController::class, 'inhabilitar']);
+            Route::patch('cursoDivisionTurno/{id}/habilitar', [CursoDivisionTurnoController::class, 'habilitar']);
         });
 
         // El propio alumno, su tutor, docente o admin pueden ver el detalle
@@ -59,6 +61,7 @@ Route::prefix('v1')->group(function () {
         Route::middleware('role:administrador')->group(function () {
             Route::apiResource('docentes', DocenteController::class)->except(['destroy']);
             Route::patch('docentes/{id}/inhabilitar', [DocenteController::class, 'inhabilitar']);
+            Route::patch('docentes/{id}/habilitar', [DocenteController::class, 'habilitar']);
         });
 
         // ── Materias ──
@@ -66,6 +69,7 @@ Route::prefix('v1')->group(function () {
         Route::middleware('role:administrador')->group(function () {
             Route::apiResource('materias', MateriaController::class)->except(['destroy']);
             Route::patch('materias/{id}/inhabilitar', [MateriaController::class, 'inhabilitar']);
+            Route::patch('materias/{id}/habilitar', [MateriaController::class, 'habilitar']);
         });
 
         // Un docente es jefe de 0 a muchas materias
@@ -95,6 +99,7 @@ Route::prefix('v1')->group(function () {
         Route::middleware('role:administrador')->group(function () {
             Route::apiResource('tutores', TutorController::class)->except(['show', 'destroy']);
             Route::patch('tutores/{id}/inhabilitar', [TutorController::class, 'inhabilitar']);
+            Route::patch('tutores/{id}/habilitar', [TutorController::class, 'habilitar']);
         });
         // El propio tutor o un admin pueden ver el detalle y los alumnos asociados
         Route::middleware('role:administrador,tutor')->group(function () {
@@ -111,6 +116,7 @@ Route::prefix('v1')->group(function () {
             Route::get('admins', [AdminController::class, 'index']);
             Route::apiResource('admins', AdminController::class)->except(['destroy']);
             Route::patch('admins/{id}/inhabilitar', [AdminController::class, 'inhabilitar']);
+            Route::patch('admins/{id}/habilitar', [AdminController::class, 'habilitar']);
         });
 
         // Perfil del usuario autenticado
@@ -124,12 +130,14 @@ Route::prefix('v1')->group(function () {
             Route::get('users/{id}', [UserController::class, 'show']);
             Route::put('users/{id}', [UserController::class, 'update']);
             Route::patch('users/{id}/inhabilitar', [UserController::class, 'inhabilitar']);
+            Route::patch('users/{id}/habilitar', [UserController::class, 'habilitar']);
         });
 
         // ── Vínculos Tutor-Alumno ──
         Route::middleware('role:administrador')->group(function () {
             Route::post('tutor-alumno', [TutorAlumnoController::class, 'store']);
             Route::patch('tutor-alumno/{id}/inhabilitar', [TutorAlumnoController::class, 'inhabilitar']);
+            Route::patch('tutor-alumno/{id}/habilitar', [TutorAlumnoController::class, 'habilitar']);
         });
 
         Route::middleware('role:administrador,tutor,alumno')->group(function () {

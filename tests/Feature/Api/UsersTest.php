@@ -120,6 +120,20 @@ test('el administrador puede inhabilitar un usuario', function () {
     expect(UserModel::withTrashed()->find($alumno->id)->trashed())->toBeTrue();
 });
 
+test('el administrador habilita un usuario inhabilitado', function () {
+    $admin = usuarioFixture('administrador');
+    $alumno = usuarioFixture('alumno');
+
+    autenticarComo($admin);
+
+    $this->patchJson('/api/v1/users/'.$alumno->id.'/inhabilitar')
+        ->assertStatus(204);
+    $this->patchJson('/api/v1/users/'.$alumno->id.'/habilitar')
+        ->assertStatus(204);
+
+    expect(UserModel::withTrashed()->find($alumno->id)->deleted_at)->toBeNull();
+});
+
 test('inhabilitar un usuario inexistente devuelve 404', function () {
     autenticarComo(usuarioFixture('administrador'));
 

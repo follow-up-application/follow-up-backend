@@ -132,6 +132,18 @@ test('el administrador inhabilita una materia', function () {
     expect(MateriaModel::withTrashed()->find($data['materia']->id)->trashed())->toBeTrue();
 });
 
+test('el administrador habilita una materia inhabilitada', function () {
+    autenticarComo(usuarioFixture('administrador'));
+    $data = crearMateria();
+
+    $this->patchJson('/api/v1/materias/'.$data['materia']->id.'/inhabilitar')
+        ->assertStatus(204);
+    $this->patchJson('/api/v1/materias/'.$data['materia']->id.'/habilitar')
+        ->assertStatus(204);
+
+    expect(MateriaModel::withTrashed()->find($data['materia']->id)->deleted_at)->toBeNull();
+});
+
 test('inhabilitar una materia inexistente devuelve 404', function () {
     autenticarComo(usuarioFixture('administrador'));
 

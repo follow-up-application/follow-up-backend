@@ -230,6 +230,19 @@ test('el administrador inhabilita un alumno', function () {
     expect(AlumnoModel::withTrashed()->find($alumno['alumno']->id)->trashed())->toBeTrue();
 });
 
+test('el administrador habilita un alumno inhabilitado', function () {
+    autenticarComo(usuarioFixture('administrador'));
+    $alumno = crearAlumno();
+
+    $this->patchJson('/api/v1/alumnos/'.$alumno['alumno']->id.'/inhabilitar')
+        ->assertStatus(204);
+    $this->patchJson('/api/v1/alumnos/'.$alumno['alumno']->id.'/habilitar')
+        ->assertStatus(204);
+
+    expect(AlumnoModel::withTrashed()->find($alumno['alumno']->id)->deleted_at)->toBeNull();
+    expect(UserModel::withTrashed()->find($alumno['user']->id)->deleted_at)->toBeNull();
+});
+
 test('inhabilitar un alumno inexistente devuelve 404', function () {
     autenticarComo(usuarioFixture('administrador'));
 

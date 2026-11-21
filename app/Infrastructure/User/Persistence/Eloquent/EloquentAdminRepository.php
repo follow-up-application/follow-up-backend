@@ -64,6 +64,22 @@ class EloquentAdminRepository implements AdminRepositoryInterface
         }
     }
 
+    public function habilitar(UserId $id): bool
+    {
+        $model = UserModel::withTrashed()
+            ->where('id', $id->value())
+            ->where('role', UserRole::ADMINISTRADOR->value)
+            ->first();
+
+        if ($model === null) {
+            return false;
+        }
+
+        $model->restore();
+
+        return true;
+    }
+
     private function toDomain(UserModel $userModel): Admin
     {
         return new Admin(

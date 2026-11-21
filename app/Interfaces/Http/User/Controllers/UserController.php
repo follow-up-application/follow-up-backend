@@ -77,6 +77,15 @@ class UserController extends Controller
         return response()->json('Usuario inhabilitado', 204);
     }
 
+    public function habilitar(string $id): JsonResponse
+    {
+        if (! $this->userRepository->habilitar(new UserId($id))) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+
+        return response()->json('Usuario habilitado', 204);
+    }
+
     public function me(Request $request): JsonResponse
     {
         $model = $request->user();

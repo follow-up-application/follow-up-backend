@@ -100,6 +100,20 @@ test('el administrador inhabilita a otro administrador', function () {
     expect(UserModel::withTrashed()->find($otro->id)->trashed())->toBeTrue();
 });
 
+test('el administrador habilita a otro administrador inhabilitado', function () {
+    $admin = usuarioFixture('administrador');
+    $otro = usuarioFixture('administrador');
+
+    autenticarComo($admin);
+
+    $this->patchJson('/api/v1/admins/'.$otro->id.'/inhabilitar')
+        ->assertStatus(204);
+    $this->patchJson('/api/v1/admins/'.$otro->id.'/habilitar')
+        ->assertStatus(204);
+
+    expect(UserModel::withTrashed()->find($otro->id)->deleted_at)->toBeNull();
+});
+
 test('inhabilitar un administrador inexistente devuelve 404', function () {
     autenticarComo(usuarioFixture('administrador'));
 

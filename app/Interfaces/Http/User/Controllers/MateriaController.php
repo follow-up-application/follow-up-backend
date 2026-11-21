@@ -93,4 +93,13 @@ class MateriaController extends Controller
 
         return response()->json('Materia inhabilitada', 204);
     }
+
+    public function habilitar(string $id): JsonResponse
+    {
+        if (! $this->materiaRepository->habilitar(intval($id))) {
+            return response()->json(['message' => 'Materia no encontrada'], 404);
+        }
+
+        return response()->json('Materia habilitada', 204);
+    }
 }

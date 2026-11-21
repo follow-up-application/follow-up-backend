@@ -128,6 +128,19 @@ test('el administrador inhabilita un tutor', function () {
     expect(UserModel::withTrashed()->find($tutor['user']->id)->trashed())->toBeTrue();
 });
 
+test('el administrador habilita un tutor inhabilitado', function () {
+    autenticarComo(usuarioFixture('administrador'));
+    $tutor = crearTutor();
+
+    $this->patchJson('/api/v1/tutores/'.$tutor['tutor']->id.'/inhabilitar')
+        ->assertStatus(204);
+    $this->patchJson('/api/v1/tutores/'.$tutor['tutor']->id.'/habilitar')
+        ->assertStatus(204);
+
+    expect(TutorModel::withTrashed()->find($tutor['tutor']->id)->deleted_at)->toBeNull();
+    expect(UserModel::withTrashed()->find($tutor['user']->id)->deleted_at)->toBeNull();
+});
+
 test('inhabilitar un tutor inexistente devuelve 404', function () {
     autenticarComo(usuarioFixture('administrador'));
 

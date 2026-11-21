@@ -1,6 +1,7 @@
 <?php
 
 use App\Infrastructure\User\Persistence\DocenteModel;
+use App\Infrastructure\User\Persistence\UserModel;
 use Illuminate\Support\Str;
 
 test('el administrador crea un docente con fecha yyyy-mm-dd', function () {
@@ -140,6 +141,19 @@ test('el administrador inhabilita un docente', function () {
         ->assertStatus(204);
 
     expect(DocenteModel::withTrashed()->find($docente['docente']->id)->trashed())->toBeTrue();
+});
+
+test('el administrador habilita un docente inhabilitado', function () {
+    autenticarComo(usuarioFixture('administrador'));
+    $docente = crearDocente();
+
+    $this->patchJson('/api/v1/docentes/'.$docente['docente']->id.'/inhabilitar')
+        ->assertStatus(204);
+    $this->patchJson('/api/v1/docentes/'.$docente['docente']->id.'/habilitar')
+        ->assertStatus(204);
+
+    expect(DocenteModel::withTrashed()->find($docente['docente']->id)->deleted_at)->toBeNull();
+    expect(UserModel::withTrashed()->find($docente['user']->id)->deleted_at)->toBeNull();
 });
 
 test('inhabilitar un docente inexistente devuelve 404', function () {

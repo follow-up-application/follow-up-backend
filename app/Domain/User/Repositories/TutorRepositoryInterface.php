@@ -13,5 +13,6 @@ interface TutorRepositoryInterface
     public function findByUsername(string $username): ?Tutor;
     public function all(): array;
     public function inhabilitar(UserId $id): void;
+    public function habilitar(UserId $id): bool;
     public function totalTutores(): int;
 }

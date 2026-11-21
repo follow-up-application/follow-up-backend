@@ -11,5 +11,6 @@ interface CursoDivisionTurnoRepositoryInterface
     public function findByName(string $name): ?CursoDivisionTurno;
     public function all(): array;
     public function inhabilitar(int $id): void;
+    public function habilitar(int $id): bool;
     public function findByAttributes(int $curso, string $division, string $turno): ?CursoDivisionTurno;
 }

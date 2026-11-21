@@ -66,6 +66,19 @@ class EloquentTutorAlumnoRepository implements TutorAlumnoRepositoryInterface
         }
     }
 
+    public function habilitar(UserId $id): bool
+    {
+        $model = TutorAlumnoModel::withTrashed()->find($id->value());
+
+        if ($model === null) {
+            return false;
+        }
+
+        $model->restore();
+
+        return true;
+    }
+
     private function toDomain(TutorAlumnoModel $model): TutorAlumno
     {
         return new TutorAlumno(

@@ -60,6 +60,19 @@ class EloquentCDTRepository implements CursoDivisionTurnoRepositoryInterface
         }
     }
 
+    public function habilitar(int $id): bool
+    {
+        $model = CursoDivisionTurnoModel::withTrashed()->find($id);
+
+        if ($model === null) {
+            return false;
+        }
+
+        $model->restore();
+
+        return true;
+    }
+
     private function toDomain(CursoDivisionTurnoModel $cdtModel): CursoDivisionTurno
     {
         return new CursoDivisionTurno(

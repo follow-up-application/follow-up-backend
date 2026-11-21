@@ -76,4 +76,13 @@ class DocenteController extends Controller
 
         return response()->json('Docente inhabilitado', 204);
     }
+
+    public function habilitar(string $id): JsonResponse
+    {
+        if (! $this->docenteRepository->habilitar(new UserId($id))) {
+            return response()->json(['message' => 'Docente no encontrado'], 404);
+        }
+
+        return response()->json('Docente habilitado', 204);
+    }
 }

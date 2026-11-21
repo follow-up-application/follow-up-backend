@@ -1,7 +1,8 @@
-FROM php:8.4-fpm-alpine AS base
+FROM php:8.4-fpm-alpine3.23 AS base
 
 # Dependencias del sistema
-RUN apk add --no-cache \
+RUN apk update && apk upgrade --no-cache \
+    && apk add --no-cache \
     postgresql-dev \
     zip unzip \
     libzip-dev \

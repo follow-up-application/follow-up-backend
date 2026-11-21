@@ -83,6 +83,19 @@ class EloquentMateriaRepository implements MateriaRepositoryInterface
         }
     }
 
+    public function habilitar(int $id): bool
+    {
+        $model = MateriaModel::withTrashed()->find($id);
+
+        if ($model === null) {
+            return false;
+        }
+
+        $model->restore();
+
+        return true;
+    }
+
     private function toDomain(MateriaModel $model): Materia
     {
         $docente = $this->docenteRepository->findById(new UserId($model->docente_id));

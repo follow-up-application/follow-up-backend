@@ -85,6 +85,21 @@ public function findByUsername(string $username): ?Docente
         }
     }
 
+    public function habilitar(UserId $id): bool
+    {
+        $docenteModel = DocenteModel::withTrashed()->find($id->value());
+        $userModel = UserModel::withTrashed()->find($id->value());
+
+        if ($docenteModel === null && $userModel === null) {
+            return false;
+        }
+
+        $docenteModel?->restore();
+        $userModel?->restore();
+
+        return true;
+    }
+
     private function toDomain(UserModel $userModel, DocenteModel $docenteModel): Docente
     {
         return new Docente(

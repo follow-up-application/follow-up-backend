@@ -112,6 +112,15 @@ class TutorController extends Controller
         return response()->json('Tutor inhabilitado', 204);
     }
 
+    public function habilitar(string $id): JsonResponse
+    {
+        if (! $this->tutorRepository->habilitar(new UserId($id))) {
+            return response()->json(['message' => 'Tutor no encontrado'], 404);
+        }
+
+        return response()->json('Tutor habilitado', 204);
+    }
+
     public function findByDni(string $dni): JsonResponse
     {
         $tutor = $this->tutorRepository->findByDni(intval($dni));
