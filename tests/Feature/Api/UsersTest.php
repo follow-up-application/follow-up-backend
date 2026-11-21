@@ -61,6 +61,23 @@ test('el administrador puede listar usuarios', function () {
         ->assertJsonFragment(['id' => $alumno->id]);
 });
 
+test('el administrador puede listar usuarios inhabilitados', function () {
+    $admin = usuarioFixture('administrador');
+    $alumno = usuarioFixture('alumno');
+    $inhabilitado = usuarioFixture('docente');
+
+    autenticarComo($admin);
+
+    $this->patchJson('/api/v1/users/'.$inhabilitado->id.'/inhabilitar')
+        ->assertStatus(204);
+
+    $this->getJson('/api/v1/users/inhabilitados')
+        ->assertOk()
+        ->assertJsonFragment(['id' => $inhabilitado->id])
+        ->assertJsonMissing(['id' => $alumno->id])
+        ->assertJsonMissing(['id' => $admin->id]);
+});
+
 test('el administrador puede obtener un usuario por id', function () {
     $admin = usuarioFixture('administrador');
     $alumno = usuarioFixture('alumno');
@@ -141,6 +158,13 @@ test('inhabilitar un usuario inexistente devuelve 404', function () {
         ->assertNotFound();
 });
 
+test('habilitar un usuario inexistente devuelve 404', function () {
+    autenticarComo(usuarioFixture('administrador'));
+
+    $this->patchJson('/api/v1/users/'.Str::uuid().'/habilitar')
+        ->assertNotFound();
+});
+
 test('un usuario autenticado puede ver su perfil con cualquier rol', function () {
     foreach (['administrador', 'docente', 'tutor', 'alumno'] as $role) {
         $user = usuarioFixture($role);
@@ -158,6 +182,7 @@ test('solo el administrador puede listar y actualizar usuarios', function () {
     $docente = usuarioFixture('docente');
 
     $this->actingAs($alumno)->getJson('/api/v1/users')->assertForbidden();
+    $this->actingAs($alumno)->getJson('/api/v1/users/inhabilitados')->assertForbidden();
     $this->actingAs($docente)->getJson('/api/v1/users')->assertForbidden();
     $this->actingAs($alumno)->getJson('/api/v1/users/'.$docente->id)->assertForbidden();
 });

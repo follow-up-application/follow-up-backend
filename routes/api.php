@@ -127,6 +127,7 @@ Route::prefix('v1')->group(function () {
         // ── Usuarios (CRUD base) ──
         Route::middleware('role:administrador')->group(function () {
             Route::get('users', [UserController::class, 'index']);
+            Route::get('users/inhabilitados', [UserController::class, 'inhabilitados']);
             Route::get('users/{id}', [UserController::class, 'show']);
             Route::put('users/{id}', [UserController::class, 'update']);
             Route::patch('users/{id}/inhabilitar', [UserController::class, 'inhabilitar']);

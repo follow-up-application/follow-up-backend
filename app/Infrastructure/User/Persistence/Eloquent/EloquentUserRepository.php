@@ -71,6 +71,14 @@ class EloquentUserRepository implements UserRepositoryInterface
             ->toArray();
     }
 
+    public function allInhabilitados(): array
+    {
+        return UserModel::onlyTrashed()
+            ->get()
+            ->map(fn (UserModel $model) => $this->toDomain($model))
+            ->toArray();
+    }
+
     private function toDomain(UserModel $model): User
     {
         return new User(

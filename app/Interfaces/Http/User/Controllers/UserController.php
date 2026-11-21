@@ -40,6 +40,11 @@ class UserController extends Controller
         return response()->json(UserResource::collection($users), 200);
     }
 
+    public function inhabilitados(): JsonResponse
+    {
+        return response()->json(UserResource::collection($this->userRepository->allInhabilitados()), 200);
+    }
+
     public function show(string $id): JsonResponse
     {
         $user = $this->userRepository->findById(new UserId($id));
