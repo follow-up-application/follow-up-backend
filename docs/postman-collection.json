@@ -2,7 +2,7 @@
   "info": {
     "name": "Follow-up Backend API - Autocontenida",
     "_postman_id": "follow-up-backend-collection-self-contained",
-    "description": "Colección Postman autocontenida para la API Follow-up (Laravel + Sanctum).\n\nEjecutar con el Collection Runner en orden. La carpeta 00 - Setup crea un administrador nuevo, inicia sesión y prepara todos los datos necesarios (CDT, docente, tutor, alumnos, materia e inscripción). Las variables de IDs y tokens se capturan automáticamente.\n\nBase URL: http://127.0.0.1:8000/api/v1\nRequisitos: base de datos migrada y servidor Laravel levantado.",
+    "description": "Colección Postman autocontenida para la API Follow-up (Laravel + Sanctum).\n\nEjecutar con el Collection Runner en orden. La carpeta 00 - Setup crea un administrador nuevo, inicia sesión y prepara todos los datos necesarios (CDT, docente, tutor, alumnos, materia e inscripción). Las variables de IDs y tokens se capturan automáticamente. La carpeta 11 - Bajas aplica bajas lógicas y luego rehabilita todos los registros.\n\nBase URL: http://127.0.0.1:8000/api/v1\nRequisitos: base de datos migrada y servidor Laravel levantado.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -2043,7 +2043,7 @@
     },
     {
       "name": "11 - Bajas",
-      "description": "Acciones destructivas al final para no romper las requests anteriores.",
+      "description": "Bajas lógicas al final para no romper las requests anteriores; luego se rehabilitan todos los registros.",
       "item": [
         {
           "name": "Inhabilitar vínculo tutor-alumno",
@@ -2278,6 +2278,254 @@
                 "users",
                 "{{userId}}",
                 "inhabilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Habilitar usuario base",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{userId}}/habilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{userId}}",
+                "habilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Habilitar admin secundario",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admins/{{secondAdminId}}/habilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admins",
+                "{{secondAdminId}}",
+                "habilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Habilitar CDT",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cursoDivisionTurno/{{cdtId}}/habilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "cursoDivisionTurno",
+                "{{cdtId}}",
+                "habilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Habilitar tutor",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tutores/{{tutorId}}/habilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutores",
+                "{{tutorId}}",
+                "habilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Habilitar docente",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/docentes/{{docenteId}}/habilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "docentes",
+                "{{docenteId}}",
+                "habilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Habilitar alumno",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/alumnos/{{alumnoId}}/habilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "alumnos",
+                "{{alumnoId}}",
+                "habilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Habilitar materia",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/materias/{{materiaId}}/habilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "materias",
+                "{{materiaId}}",
+                "habilitar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status 204\", function () { pm.response.to.have.status(204); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Habilitar vínculo tutor-alumno",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tutor-alumno/{{tutorAlumnoId}}/habilitar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tutor-alumno",
+                "{{tutorAlumnoId}}",
+                "habilitar"
               ]
             }
           },
