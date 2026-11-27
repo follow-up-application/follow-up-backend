@@ -22,6 +22,7 @@ class AdminResource extends JsonResource
             'last_name'           => $admin->lastName(),
             'username'            => $admin->username(),
             'role'                => $admin->role()->value,
+            'activo'              => $admin->activo(),
         ];
     }
 }

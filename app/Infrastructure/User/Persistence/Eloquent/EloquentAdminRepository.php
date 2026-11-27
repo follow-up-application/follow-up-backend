@@ -29,7 +29,8 @@ class EloquentAdminRepository implements AdminRepositoryInterface
 
     public function findById(UserId $id): ?Admin
     {
-        $userModel = UserModel::where('id', $id->value())
+        $userModel = UserModel::withTrashed()
+            ->where('id', $id->value())
             ->where('role', UserRole::ADMINISTRADOR->value)
             ->first();
 
@@ -38,7 +39,8 @@ class EloquentAdminRepository implements AdminRepositoryInterface
 
     public function findByUsername(string $username): ?Admin
     {
-        $userModel = UserModel::where('username', $username)
+        $userModel = UserModel::withTrashed()
+            ->where('username', $username)
             ->where('role', UserRole::ADMINISTRADOR->value)
             ->first();
 
@@ -47,7 +49,8 @@ class EloquentAdminRepository implements AdminRepositoryInterface
 
     public function all(): array
     {
-        return UserModel::where('role', UserRole::ADMINISTRADOR->value)
+        return UserModel::withTrashed()
+            ->where('role', UserRole::ADMINISTRADOR->value)
             ->get()
             ->map(fn (UserModel $model) => $this->toDomain($model))
             ->toArray();
@@ -88,6 +91,7 @@ class EloquentAdminRepository implements AdminRepositoryInterface
             $userModel->last_name,
             $userModel->password,
             $userModel->username,
+            !$userModel->trashed(),
         );
     }
 }
