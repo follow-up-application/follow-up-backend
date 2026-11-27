@@ -28,15 +28,6 @@ class AdminController extends Controller
         public readonly TutorRepositoryInterface $tutorRepository,
     ) {}
 
-    public function register(CreateAdminRequest $request): JsonResponse
-    {
-        $dto  = CreateAdminDTO::fromArray($request->validated());
-        $user = $this->createAdminUseCase->execute($dto);
-        $this->adminRepository->inhabilitar($user->id());
-
-        return response()->json(new AdminResource($user), 201);
-    }
-
     public function store(CreateAdminRequest $request): JsonResponse
     {
         $dto  = CreateAdminDTO::fromArray($request->validated());

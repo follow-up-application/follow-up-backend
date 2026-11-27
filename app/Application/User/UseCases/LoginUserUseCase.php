@@ -24,7 +24,7 @@ class LoginUserUseCase
             $trashedModel = UserModel::onlyTrashed()->where('username', $dto->username)->first();
             if ($trashedModel && Hash::check($dto->password, $trashedModel->password)) {
                 throw ValidationException::withMessages([
-                    'username' => ['Tu cuenta de administrador está pendiente de aprobación por la dirección o se encuentra inhabilitada.'],
+                    'username' => ['Tu cuenta se encuentra inhabilitada.'],
                 ]);
             }
 

@@ -4,52 +4,49 @@ use App\Infrastructure\User\Persistence\UserModel;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-test('un administrador puede registrarse publicamente y queda pendiente de aprobacion', function () {
-    $response = $this->postJson('/api/v1/admins/register', [
+test('el registro publico de administrador no esta disponible por seguridad', function () {
+    $this->postJson('/api/v1/admins/register', [
         'first_name' => 'Nuevo',
         'last_name' => 'Admin',
         'username' => 'admin.nuevo',
         'password' => 'Password123!',
+    ])->assertStatus(405);
+});
+
+test('un administrador autenticado puede dar de alta a otro administrador', function () {
+    $admin = usuarioFixture('administrador');
+    autenticarComo($admin);
+
+    $response = $this->postJson('/api/v1/admins', [
+        'first_name' => 'Nuevo',
+        'last_name' => 'Admin',
+        'username' => 'admin.creado',
+        'password' => 'Password123!',
     ]);
 
     $response->assertCreated()
-        ->assertJsonPath('username', 'admin.nuevo')
-        ->assertJsonPath('role', 'administrador');
+        ->assertJsonPath('username', 'admin.creado')
+        ->assertJsonPath('role', 'administrador')
+        ->assertJsonPath('activo', true);
 
     $userId = $response->json('id');
-    $user = UserModel::withTrashed()->find($userId);
+    $user = UserModel::find($userId);
 
     expect($user->role)->toBe('administrador');
-    expect($user->trashed())->toBeTrue();
+    expect($user->trashed())->toBeFalse();
     expect(Hash::check('Password123!', $user->password))->toBeTrue();
 
-    // No puede iniciar sesión mientras está inhabilitado/pendiente
     $this->postJson('/api/v1/login', [
-        'username' => 'admin.nuevo',
-        'password' => 'Password123!',
-    ])->assertStatus(422)
-      ->assertJsonValidationErrors(['username']);
-
-    // Un administrador existente aprueba/habilita la cuenta
-    $adminExistente = usuarioFixture('administrador');
-    autenticarComo($adminExistente);
-
-    $this->patchJson('/api/v1/admins/'.$userId.'/habilitar')
-        ->assertStatus(204);
-
-    expect(UserModel::find($userId)->trashed())->toBeFalse();
-
-    // Ahora sí puede iniciar sesión
-    $this->postJson('/api/v1/login', [
-        'username' => 'admin.nuevo',
+        'username' => 'admin.creado',
         'password' => 'Password123!',
     ])->assertOk();
 });
 
-test('el registro de administrador valida username y password', function () {
-    usuarioFixture('administrador', ['username' => 'admin.existente']);
+test('la creacion de administrador valida username y password', function () {
+    $admin = usuarioFixture('administrador', ['username' => 'admin.existente']);
+    autenticarComo($admin);
 
-    $this->postJson('/api/v1/admins/register', [
+    $this->postJson('/api/v1/admins', [
         'first_name' => 'Otro',
         'last_name' => 'Admin',
         'username' => 'admin.existente',
@@ -160,7 +157,6 @@ test('un docente no puede acceder a la gestion de administradores', function () 
 
     $this->getJson('/api/v1/admins')->assertForbidden();
     $this->getJson('/api/v1/admins/estadisticas')->assertForbidden();
-    $this->postJson('/api/v1/admins/register', [])
-        ->assertStatus(422)
-        ->assertJsonValidationErrors(['first_name', 'last_name', 'username', 'password']);
+    $this->postJson('/api/v1/admins', [])
+        ->assertForbidden();
 });
