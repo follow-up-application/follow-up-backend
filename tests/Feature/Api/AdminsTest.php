@@ -4,7 +4,7 @@ use App\Infrastructure\User\Persistence\UserModel;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-test('un administrador puede registrarse publicamente', function () {
+test('un administrador puede registrarse publicamente y queda pendiente de aprobacion', function () {
     $response = $this->postJson('/api/v1/admins/register', [
         'first_name' => 'Nuevo',
         'last_name' => 'Admin',
@@ -16,11 +16,30 @@ test('un administrador puede registrarse publicamente', function () {
         ->assertJsonPath('username', 'admin.nuevo')
         ->assertJsonPath('role', 'administrador');
 
-    $user = UserModel::find($response->json('id'));
+    $userId = $response->json('id');
+    $user = UserModel::withTrashed()->find($userId);
 
     expect($user->role)->toBe('administrador');
+    expect($user->trashed())->toBeTrue();
     expect(Hash::check('Password123!', $user->password))->toBeTrue();
 
+    // No puede iniciar sesión mientras está inhabilitado/pendiente
+    $this->postJson('/api/v1/login', [
+        'username' => 'admin.nuevo',
+        'password' => 'Password123!',
+    ])->assertStatus(422)
+      ->assertJsonValidationErrors(['username']);
+
+    // Un administrador existente aprueba/habilita la cuenta
+    $adminExistente = usuarioFixture('administrador');
+    autenticarComo($adminExistente);
+
+    $this->patchJson('/api/v1/admins/'.$userId.'/habilitar')
+        ->assertStatus(204);
+
+    expect(UserModel::find($userId)->trashed())->toBeFalse();
+
+    // Ahora sí puede iniciar sesión
     $this->postJson('/api/v1/login', [
         'username' => 'admin.nuevo',
         'password' => 'Password123!',

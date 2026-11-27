@@ -20,7 +20,20 @@ class LoginUserUseCase
     {
         $user = $this->userRepository->findByUsername($dto->username);
 
-        if (!$user || !Hash::check($dto->password, $user->password())) {
+        if (!$user) {
+            $trashedModel = UserModel::onlyTrashed()->where('username', $dto->username)->first();
+            if ($trashedModel && Hash::check($dto->password, $trashedModel->password)) {
+                throw ValidationException::withMessages([
+                    'username' => ['Tu cuenta de administrador está pendiente de aprobación por la dirección o se encuentra inhabilitada.'],
+                ]);
+            }
+
+            throw ValidationException::withMessages([
+                'username' => ['Las credenciales son incorrectas.'],
+            ]);
+        }
+
+        if (!Hash::check($dto->password, $user->password())) {
             throw ValidationException::withMessages([
                 'username' => ['Las credenciales son incorrectas.'],
             ]);
